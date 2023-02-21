@@ -9,6 +9,7 @@ types = (
 )
 
 repeat_patterns = (
+    ("one off", "one off"),
     ("monthly", "monthly"),
     ("weekly", "weekly"),
     ("every two weeks", "every two weeks"),
@@ -27,16 +28,17 @@ class Item(models.Model):
 
     purpose = models.CharField(max_length=200)
     amount = models.FloatField(max_length=6)
-    due_date = models.DateField()
+    due_date = models.DateField(null=True)
     repeat_pattern = models.CharField(max_length=30,
                                       choices=repeat_patterns,
-                                      default="monthly")
-    website = models.URLField()
-    email = models.EmailField()
-    telefone = models.PositiveBigIntegerField()
-    end_date = models.DateField()
+                                      default="monthly",
+                                      null=True)
+    website = models.URLField(null=True)
+    email = models.EmailField(null=True)
+    telefone = models.PositiveBigIntegerField(null=True)
+    end_date = models.DateField(null=True)
     date_added = models.DateField(default=today.strftime(
-        "%d/%m/%Y"), editable=False, auto_created=True)
+        "%d/%m/%Y"), editable=False)
 
     def __str__(self):
         return f"{self.type}"
