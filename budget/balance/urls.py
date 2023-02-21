@@ -15,11 +15,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from views import balance, bills, details, incomes, lent
+from .views import balance, bills, details, incomes, lent
 
 
 urlpatterns = [
-    path("balance", balance, name="balance"),
+    path("", balance, name="balance"),
     path("bills", bills, name="bills"),
     path("details", details, name="details"),
     path("incomes", incomes, name="incomes"),
