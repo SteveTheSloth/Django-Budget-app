@@ -8,5 +8,16 @@
 </head>
 <body>
     <h1>Bills</h1>
+
+    <table>
+        {% for transaction in transactions %}
+        {%  if transaction.type == "Expense" %}
+        <th>{{ transaction.purpose }}</th>
+        <td>{{ transaction.name }}</td>
+        <td>{{ transaction.amount }}</td>
+        
+        {% endif %}
+        {% endfor %}
+    </table>
 </body>
 </html>

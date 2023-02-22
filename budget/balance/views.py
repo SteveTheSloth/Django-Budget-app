@@ -2,7 +2,7 @@ from django.shortcuts import render
 
 # Create your views here.
 
-from .models import Item
+from .models import Transaction
 
 
 def balance(request):
@@ -10,7 +10,7 @@ def balance(request):
 
 
 def bills(request):
-    return render(request, "balance/bills.html")
+    return render(request, "balance/bills.html", {"transactions": Transaction.objects.all()})
 
 
 def details(request):
