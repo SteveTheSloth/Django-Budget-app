@@ -1,5 +1,4 @@
 from django.db import models
-from django.utils import timezone
 # Create your models here.
 
 types = (
@@ -34,7 +33,7 @@ class Transaction(models.Model):
     email = models.EmailField(blank=True, null=True)
     telephone = models.PositiveBigIntegerField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
-    date_added = models.DateField(default=timezone.now(), editable=False)
+    date_added = models.DateField(auto_now_add=True, editable=False)
 
     def __str__(self):
         return f"{self.name}"

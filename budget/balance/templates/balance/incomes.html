@@ -8,5 +8,15 @@
 </head>
 <body>
     <h1>Incomes</h1>
+
+    <table>
+        {% for transaction in transactions %}
+        {%  if transaction.type == "Income" %}
+        <th>{{ transaction.purpose }}</th>
+        <td><a href="{% url 'details' transaction.id %}">{{ transaction.name }}</a></td>
+        <td>{{ transaction.amount }}</td>
+        {% endif %}
+        {% endfor %}
+    </table>
 </body>
 </html>

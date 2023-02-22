@@ -4,9 +4,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>I.O.U.</title>
+    <title>Loans</title>
 </head>
 <body>
-    <h1>I.O.U.</h1>
+    <h1>Loans</h1>
+
+    <table>
+        {% for transaction in transactions %}
+        {%  if transaction.type == "Loan" %}
+        <th>{{ transaction.purpose }}</th>
+        <td><a href="{% url 'details' transaction.id %}">{{ transaction.name }}</a></td>
+        <td>{{ transaction.amount }}</td>
+        {% endif %}
+        {% endfor %}
+    </table>
 </body>
 </html>

@@ -20,7 +20,9 @@
         <td>{{transaction.amount}}£</td>
         <tr></tr>
         <th>Due On</th>
+        {% if transaction.due_date != None %}
         <td>{{transaction.due_date}}</td>
+        {% endif %}
         <tr></tr>
         <th>Repeat Pattern</th>
         <td>{{transaction.repeat_pattern}}</td>

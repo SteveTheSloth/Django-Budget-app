@@ -20,8 +20,8 @@ def details(request, id):
 
 
 def incomes(request):
-    return render(request, "balance/incomes.html")
+    return render(request, "balance/incomes.html", {"transactions": Transaction.objects.all()})
 
 
 def lent(request):
-    return render(request, "balance/lent.html")
+    return render(request, "balance/lent.html", {"transactions": Transaction.objects.all()})
