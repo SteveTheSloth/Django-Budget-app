@@ -13,9 +13,8 @@
         {% for transaction in transactions %}
         {%  if transaction.type == "Expense" %}
         <th>{{ transaction.purpose }}</th>
-        <td>{{ transaction.name }}</td>
+        <td><a href="{% url 'details' transaction.id %}">{{ transaction.name }}</a></td>
         <td>{{ transaction.amount }}</td>
-        
         {% endif %}
         {% endfor %}
     </table>

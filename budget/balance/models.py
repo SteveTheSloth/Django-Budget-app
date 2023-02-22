@@ -32,9 +32,9 @@ class Transaction(models.Model):
                                       default="monthly")
     website = models.URLField(blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
-    telefone = models.PositiveBigIntegerField(blank=True, null=True)
+    telephone = models.PositiveBigIntegerField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
     date_added = models.DateField(default=timezone.now(), editable=False)
 
     def __str__(self):
-        return f"{self.type}"
+        return f"{self.name}"

@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 
@@ -13,8 +13,10 @@ def bills(request):
     return render(request, "balance/bills.html", {"transactions": Transaction.objects.all()})
 
 
-def details(request):
-    return render(request, "balance/details.html")
+def details(request, id):
+    transaction = get_object_or_404(Transaction, pk=id)
+
+    return render(request, "balance/details.html", {"transaction": transaction})
 
 
 def incomes(request):

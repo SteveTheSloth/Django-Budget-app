@@ -21,7 +21,7 @@ from .views import balance, bills, details, incomes, lent
 urlpatterns = [
     path("", balance, name="balance"),
     path("bills", bills, name="bills"),
-    path("details", details, name="details"),
+    path("<int:id>", details, name="details"),
     path("incomes", incomes, name="incomes"),
     path("lent", lent, name="lent"),
 ]
