@@ -8,47 +8,25 @@
 </head>
 <body>
     <h1>Details for {{transaction.name}}</h1>
-
+    <br>
     <table>
-        <th>Purpose</th>
-        <td>{{transaction.purpose}}</td>
-        <tr></tr>
-        <th>Type</th>
-        <td>{{transaction.type}}</td>
-        <tr></tr>
-        <th>Amount</th>
-        <td>{{transaction.amount}}£</td>
-        <tr></tr>
-        <th>Due On</th>
-        {% if transaction.due_date != None %}
-        <td>{{transaction.due_date}}</td>
+        {% for key, value in items %}
+        <th>{{ key }}</th>
+        {% if value != None %}
+        
+        <td>
+            {% if key != "Website" %}
+            {{ value }}
+            {% else %}
+            <a href="{{value}}" target="_blank">{{value}}</a>   
+            {% endif %}  
+        </td>
+
         {% endif %}
         <tr></tr>
-        <th>Repeat Pattern</th>
-        <td>{{transaction.repeat_pattern}}</td>
-        <tr></tr>
-        <th>Website</th>
-        {% if transaction.website != None %}
-        <td><a href="{{transaction.website}}">{{transaction.website}}</a></td>
-        {% endif %}
-        <tr></tr>
-        <th>E-Mail</th>
-        {% if transaction.email != None %}
-        <td>{{transaction.email}}</td>
-        {% endif %}
-        <tr></tr>
-        <th>Telephone Number</th>
-        {% if transaction.telephone != None %}
-        <td>{{transaction.telephone}}</td>
-        {% endif %}
-        <tr></tr>
-        <th>End Date</th>
-        {% if transaction.end_date != None %}
-        <td>{{transaction.end_date}}</td>
-        {% endif %}
-        <tr></tr>
-        <th>Added On</th>
-        <td>{{transaction.date_added}}</td>
+        {% endfor %}
     </table>
+
+    
 </body>
 </html>

@@ -18,17 +18,13 @@ repeat_patterns = (
 
 
 class Transaction(models.Model):
-    type = models.CharField(max_length=10,
-                            choices=types,
-                            default="Expense"
-                            )
+    type = models.TextChoices("Transaction Type", "Expense Income Loan")
     name = models.CharField(max_length=200)
     purpose = models.CharField(max_length=200)
     amount = models.FloatField(max_length=6)
     due_date = models.DateField(blank=True, null=True)
-    repeat_pattern = models.CharField(max_length=30,
-                                      choices=repeat_patterns,
-                                      default="monthly")
+    repeat_pattern = models.TextChoices("",
+                                        "once monthly weekly 2-weekly 4-weekly")
     website = models.URLField(blank=True, null=True)
     email = models.EmailField(blank=True, null=True)
     telephone = models.PositiveBigIntegerField(blank=True, null=True)
@@ -37,3 +33,19 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+    def dict(self):
+        attributes = {
+            "Name": self.name,
+            "Purpose": self.purpose,
+            "Type": self.type,
+            "Amount": self.amount,
+            "Due On": self.due_date,
+            "Repeat Pattern": self.repeat_pattern,
+            "Website": self.website,
+            "E-Mail": self.email,
+            "Telephone Number": self.telephone,
+            "End Date": self.end_date,
+            "Added On": self.date_added
+        }
+        return attributes
