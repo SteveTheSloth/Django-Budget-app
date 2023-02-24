@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import balance, bills, details, incomes, lent, form, editform
+from .views import balance, bills, details, incomes, lent, form, editform, delete_check
 
 
 urlpatterns = [
@@ -26,4 +26,5 @@ urlpatterns = [
     path("lent", lent, name="lent"),
     path("form", form, name="form"),
     path("<int:id>/edit", editform, name="editform"),
+    path("<int:id>/deletecheck", delete_check, name="delete_check")
 ]

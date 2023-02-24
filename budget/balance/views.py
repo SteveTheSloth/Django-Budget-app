@@ -26,6 +26,21 @@ def bills(request):
     return render(request, "balance/bills.html", {"transactions": Transaction.objects.all()})
 
 
+def delete_check(request, id):
+    transaction = get_object_or_404(Transaction, pk=id)
+    transaction_type = transaction.type
+
+    if request.method == "POST":
+        Transaction.delete(transaction)
+        if transaction_type == "Income":
+            return redirect("incomes")
+        elif transaction_type == "Expense":
+            return redirect("bills")
+        else:
+            return redirect("lent")
+    return render(request, "balance/deletecheck.html", {"transaction": transaction})
+
+
 def details(request, id):
     transaction = get_object_or_404(Transaction, pk=id)
     items = transaction.dict().items()
@@ -35,14 +50,18 @@ def details(request, id):
 
 def editform(request, id):
     transaction = get_object_or_404(Transaction, pk=id)
-    items = transaction.dict()
 
     if request.method == "POST":
-        form = TransactionForm(request.POST)
+        form = TransactionForm(request.POST, instance=transaction)
 
         if form.is_valid():
             form.save()
-            return redirect("welcome")
+            if transaction.type == "Income":
+                return redirect("incomes")
+            elif transaction.type == "Expense":
+                return redirect("bills")
+            else:
+                return redirect("lent")
     else:
         form = TransactionForm(initial=transaction.__dict__)
 
