@@ -11,7 +11,6 @@ class TransactionForm(ModelForm):
         model = Transaction
         fields = "__all__"
         widgets = {
-
         }
 
     def clean_date(self):

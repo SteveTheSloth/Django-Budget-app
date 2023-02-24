@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import timedelta, date
 # Create your models here.
 
 types = (
@@ -24,7 +25,7 @@ class Transaction(models.Model):
     name = models.CharField(max_length=200)
     purpose = models.CharField(max_length=200)
     amount = models.FloatField(max_length=6)
-    due_date = models.DateField(blank=True, null=True)
+    due_date = models.DateField()
     repeat_pattern = models.CharField(max_length=25,
                                       choices=repeat_patterns,
                                       default="one off")
@@ -52,3 +53,75 @@ class Transaction(models.Model):
             "Added On": self.date_added
         }
         return attributes
+
+    def active_month(self, month):
+        if self.end_date != None:
+            if self.end_date.month < month or self.due_date.month > month:
+                return None
+
+        if self.repeat_pattern == "one off":
+            if self.due_date.month == month:
+                return self.amount
+
+        elif self.repeat_pattern == "monthly":
+            return self.amount
+
+        elif self.repeat_pattern == "weekly":
+
+            due_in_month = self.due_date
+            week = timedelta(weeks=1)
+            amount = 0
+
+            while due_in_month.month != month:
+                due_in_month += week
+
+            while due_in_month.month == month:
+                amount += self.amount
+                due_in_month += week
+
+            return amount
+
+        elif self.repeat_pattern == "every two weeks":
+
+            due_in_month = self.due_date
+            weeks = timedelta(weeks=2)
+            amount = 0
+
+            while due_in_month.month != month:
+                due_in_month += weeks
+
+            while due_in_month.month == month:
+                amount += self.amount
+                due_in_month += weeks
+
+            return amount
+
+        elif self.repeat_pattern == "every three weeks":
+
+            due_in_month = self.due_date
+            weeks = timedelta(weeks=3)
+            amount = 0
+
+            while due_in_month.month != month:
+                due_in_month += weeks
+
+            while due_in_month.month == month:
+                amount += self.amount
+                due_in_month += weeks
+
+            return amount
+
+        elif self.repeat_pattern == "every four weeks":
+
+            due_in_month = self.due_date
+            weeks = timedelta(weeks=4)
+            amount = 0
+
+            while due_in_month.month != month:
+                due_in_month += weeks
+
+            while due_in_month.month == month:
+                amount += self.amount
+                due_in_month += weeks
+
+            return amount

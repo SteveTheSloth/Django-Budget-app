@@ -2,12 +2,24 @@ from django.shortcuts import redirect, render, get_object_or_404
 
 # Create your views here.
 
+from datetime import date
 from .models import Transaction
 from .form import TransactionForm
+from .typeselector import TypeSelector
 
 
 def balance(request):
-    return render(request, "balance/balance.html")
+    now = date.today()
+    amount = 0
+
+    for transaction in Transaction.objects.all():
+        if transaction.active_month(now.month) != None:
+            if transaction.type == "Expense":
+                amount -= transaction.active_month(now.month)
+            elif transaction.type == "Income":
+                amount += transaction.active_month(now.month)
+
+    return render(request, "balance/balance.html", {"amount": amount})
 
 
 def bills(request):
@@ -39,4 +51,4 @@ def form(request):
     else:
         form = TransactionForm()
 
-    return render(request, "balance/form.html", {"form": form})
+    return render(request, "balance/form.html", {"form": form, "typeselector": TypeSelector})
