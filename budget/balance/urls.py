@@ -20,7 +20,7 @@ from .views import balance, balance_diff_month, bills, details, incomes, lent, f
 
 urlpatterns = [
     path("", balance, name="balance_now"),
-    path("month/<int:monthyear>", balance_diff_month, name="balance"),
+    path("month/<int:monthyear>", balance_diff_month, name="balance_diff_month"),
     path("bills", bills, name="bills"),
     path("details/<int:id>/", details, name="details"),
     path("incomes", incomes, name="incomes"),

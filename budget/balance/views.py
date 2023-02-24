@@ -5,7 +5,6 @@ from django.shortcuts import redirect, render, get_object_or_404
 from datetime import date
 from .models import Transaction
 from .form import TransactionForm
-from .typeselector import TypeSelector
 
 month_str = str(date.today().month)
 year_str = str(date.today().year)
@@ -129,16 +128,17 @@ def editform(request, id):
 
 
 def form(request):
+
     if request.method == "POST":
         form = TransactionForm(request.POST)
 
         if form.is_valid():
             form.save()
-            return redirect("welcome")
+            return redirect("balance")
     else:
         form = TransactionForm()
 
-    return render(request, "balance/form.html", {"form": form, "typeselector": TypeSelector})
+    return render(request, "balance/form.html", {"form": form})
 
 
 def incomes(request):

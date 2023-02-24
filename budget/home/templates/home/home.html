@@ -14,6 +14,32 @@
 
     <h1>Budget Planner</h1>
 
+    <table>expenses</table>
+    <table>
+    {% for key, value in expenses %}
+        <th>{{key}}</th>
+        {% for v in value %}
+            <td>{{v}}</td>
+            <td></td>
+        {% endfor %}
+    <tr></tr>
+    {% endfor %}
+
+    </table>
+
+    <h3>incomes</h3>
+    <table>
+        {% for key, value in incomes %}
+            <th>{{key}}</th>
+            {% for v in value %}
+                <td>{{v}}</td>
+                <td></td>
+            {% endfor %}
+        <tr></tr>
+        {% endfor %}
+    
+    </table>
+
     <div class="container">
 
         <div class="calendar">
@@ -110,6 +136,7 @@
         <a href="{% url 'bills' %}">Bills</a>
         <a href="{% url 'incomes' %}">Incomes</a>
         <a href="{% url 'lent' %}">I.O.U.</a>
+        <a href="{% url 'form' %}">Add new Transaction</a>
     </nav>
     
 
