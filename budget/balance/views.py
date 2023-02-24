@@ -33,12 +33,20 @@ def details(request, id):
     return render(request, "balance/details.html", {"transaction": transaction, "items": items})
 
 
-def incomes(request):
-    return render(request, "balance/incomes.html", {"transactions": Transaction.objects.all()})
+def editform(request, id):
+    transaction = get_object_or_404(Transaction, pk=id)
+    items = transaction.dict()
 
+    if request.method == "POST":
+        form = TransactionForm(request.POST)
 
-def lent(request):
-    return render(request, "balance/lent.html", {"transactions": Transaction.objects.all()})
+        if form.is_valid():
+            form.save()
+            return redirect("welcome")
+    else:
+        form = TransactionForm(initial=transaction.__dict__)
+
+    return render(request, "balance/editform.html", {"transaction": transaction, "form": form})
 
 
 def form(request):
@@ -52,3 +60,11 @@ def form(request):
         form = TransactionForm()
 
     return render(request, "balance/form.html", {"form": form, "typeselector": TypeSelector})
+
+
+def incomes(request):
+    return render(request, "balance/incomes.html", {"transactions": Transaction.objects.all()})
+
+
+def lent(request):
+    return render(request, "balance/lent.html", {"transactions": Transaction.objects.all()})

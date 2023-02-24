@@ -27,15 +27,20 @@
         {% endfor %}
     </table>
 
-    {% if transaction.type == "Expense" %}
-    <a href="{% url 'bills' %}">Back to Bills</a>
-    {% elif transaction.type == "Income" %}
-    <a href="{% url 'incomes' %}">Back to Incomes</a>
-    {% else %}
-    <a href="{% url 'lent' %}">Back to I.O.U.s</a>
-    {% endif %}
-
-    <a href="{% url 'welcome' %}">Home</a>
-    <a href="{% url 'balance' %}">Balance</a>
+    <td><form action="{% url 'editform' transaction.id %}">
+        <button type="submit">Edit</button>
+    </form>
+    </td>
+    <nav>
+        {% if transaction.type == "Expense" %}
+        <a href="{% url 'bills' %}">Back to Bills</a>
+        {% elif transaction.type == "Income" %}
+        <a href="{% url 'incomes' %}">Back to Incomes</a>
+        {% else %}
+        <a href="{% url 'lent' %}">Back to I.O.U.s</a>
+        {% endif %}
+        <a href="{% url 'welcome' %}">Home</a>
+        <a href="{% url 'balance' %}">Balance</a>
+    </nav>
 </body>
 </html> 

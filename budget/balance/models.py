@@ -25,7 +25,7 @@ class Transaction(models.Model):
     name = models.CharField(max_length=200)
     purpose = models.CharField(max_length=200)
     amount = models.FloatField(max_length=6)
-    due_date = models.DateField()
+    due_date = models.DateField(default=date.today())
     repeat_pattern = models.CharField(max_length=25,
                                       choices=repeat_patterns,
                                       default="one off")

@@ -15,17 +15,16 @@
             {% now "F" %} {% now "Y" %}
             <br>
             {{amount}}
-            <!-- <button id="demo" onclick="getElementById('demo').innerHTML = Date()">What is the time?</button> -->
-            <!-- <button type="button" onclick=""><</button> {% now "F" %} {% now "Y" %} <button type="button">></button>       -->
         </h3>
         
 
     </form>
     
-
-    <a href="{% url 'incomes' %}">Total in</a>
-    <a href="{% url 'bills' %}">Total out</a>
-    <a href="{% url 'lent' %}">Total I.O.U.</a>
-    <a href="{% url 'welcome' %}">Home</a>
+    <nav>
+        <a href="{% url 'incomes' %}">Total in</a>
+        <a href="{% url 'bills' %}">Total out</a>
+        <a href="{% url 'lent' %}">Total I.O.U.</a>
+        <a href="{% url 'welcome' %}">Home</a>
+    </nav>
 </body>
 </html>
