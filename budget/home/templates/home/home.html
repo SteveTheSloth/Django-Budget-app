@@ -105,11 +105,13 @@
         </div> <!-- end calendar -->
 
     </div> <!-- end container -->
-
-    <a href="{% url 'balance' %}">Balance</a>
-    <a href="{% url 'bills' %}">Bills</a>
-    <a href="{% url 'incomes' %}">Incomes</a>
-    <a href="{% url 'lent' %}">I.O.U.</a>
+    <nav>
+        <a href="{% url 'balance_now' %}">Balance</a>
+        <a href="{% url 'bills' %}">Bills</a>
+        <a href="{% url 'incomes' %}">Incomes</a>
+        <a href="{% url 'lent' %}">I.O.U.</a>
+    </nav>
+    
 
 </body>
 

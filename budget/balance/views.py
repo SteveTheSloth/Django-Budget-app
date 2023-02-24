@@ -7,19 +7,79 @@ from .models import Transaction
 from .form import TransactionForm
 from .typeselector import TypeSelector
 
+month_str = str(date.today().month)
+year_str = str(date.today().year)
+month_year_int = int(month_str + year_str)
+
 
 def balance(request):
-    now = date.today()
     amount = 0
+    date_shown = date.today()
+
+    # Create previous and next month to pass to template to skip through months.
+    if date_shown.month not in (1, 12):
+        next_month = date_shown.replace(month=date_shown.month+1)
+        prev_month = date_shown.replace(month=date_shown.month-1)
+    elif date_shown.month == 12:
+        next_month = date_shown.replace(year=date_shown.year+1, month=1)
+        prev_month = date_shown.replace(month=date_shown.month-1)
+    else:
+        next_month = date_shown.replace(month=2)
+        prev_month = date_shown.replace(year=date_shown.year-1, month=12)
+
+    next_month_int = int(str(next_month.month) + str(next_month.year))
+    prev_month_int = int(str(prev_month.month) + str(prev_month.year))
+
+    # Calculate total amount of balance for certain month.
+    for transaction in Transaction.objects.all():
+        if transaction.active_month(date_shown.month) != None:
+            if transaction.type == "Expense":
+                amount -= transaction.active_month(date_shown.month)
+            elif transaction.type == "Income":
+                amount += transaction.active_month(date_shown.month)
+
+    return render(request, "balance/balance.html", {"amount": amount, "month": date_shown.strftime("%B"),
+                                                    "year": date_shown.strftime("%Y"), "next_month": next_month_int,
+                                                    "prev_month": prev_month_int})
+
+
+def balance_diff_month(request, monthyear=month_year_int):
+    """Same functionality as balance, takes monthyear=int(myyyy) as argument to display month in past
+    or future."""
+
+    amount = 0
+    if len(str(monthyear)) == 6:
+        show_year = int(str(monthyear)[-4:])
+        show_month = int(str(monthyear)[:2])
+    else:
+        show_year = int(str(monthyear)[-4:])
+        show_month = int(str(monthyear)[:1])
+
+    date_shown = date.today().replace(year=show_year, month=show_month)
+
+    if show_month not in (1, 12):
+        next_month = date_shown.replace(month=show_month+1)
+        prev_month = date_shown.replace(month=show_month-1)
+    elif show_month == 12:
+        next_month = date_shown.replace(year=show_year+1, month=1)
+        prev_month = date_shown.replace(month=show_month-1)
+    else:
+        next_month = date_shown.replace(month=2)
+        prev_month = date_shown.replace(year=show_year-1, month=12)
+
+    next_month_int = int(str(next_month.month) + str(next_month.year))
+    prev_month_int = int(str(prev_month.month) + str(prev_month.year))
 
     for transaction in Transaction.objects.all():
-        if transaction.active_month(now.month) != None:
+        if transaction.active_month(date_shown.month) != None:
             if transaction.type == "Expense":
-                amount -= transaction.active_month(now.month)
+                amount -= transaction.active_month(date_shown.month)
             elif transaction.type == "Income":
-                amount += transaction.active_month(now.month)
+                amount += transaction.active_month(date_shown.month)
 
-    return render(request, "balance/balance.html", {"amount": amount})
+    return render(request, "balance/balance.html", {"amount": amount, "month": date_shown.strftime("%B"),
+                                                    "year": date_shown.strftime("%Y"), "next_month": next_month_int,
+                                                    "prev_month": prev_month_int})
 
 
 def bills(request):

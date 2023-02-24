@@ -17,13 +17,13 @@
         <td><a href="{% url 'details' transaction.id %}">{{ transaction.name }}</a></td>
         <td>
             <form action="{% url 'editform' transaction.id %}">
-            <button type="submit">Edit</button>
-        </form>
+                <button type="submit">Edit</button>
+            </form>
         </td>
         <td>
             <form action="{% url 'delete_check' transaction.id %}">
-            <button type="submit">Delete</button>
-        </form>
+                <button type="submit">Delete</button>
+            </form>
         </td>
         <tr></tr>
         {% endif %}

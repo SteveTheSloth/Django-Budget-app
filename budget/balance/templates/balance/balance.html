@@ -12,7 +12,9 @@
     <form>
         
         <h3>
-            {% now "F" %} {% now "Y" %}
+            <a href="{% url 'balance_diff_month' prev_month %}"><</a>
+            {{month}} {{year}}
+            <a href="{% url 'balance_diff_month' next_month %}">></a>
             <br>
             {{amount}}
         </h3>
@@ -21,10 +23,11 @@
     </form>
     
     <nav>
-        <a href="{% url 'incomes' %}">Total in</a>
-        <a href="{% url 'bills' %}">Total out</a>
-        <a href="{% url 'lent' %}">Total I.O.U.</a>
         <a href="{% url 'welcome' %}">Home</a>
+        <a href="{% url 'balance_now' %}">Balance</a>
+        <a href="{% url 'bills' %}">Bills</a>
+        <a href="{% url 'incomes' %}">Incomes</a>
+        <a href="{% url 'lent' %}">I.O.U.</a>
     </nav>
 </body>
 </html>
