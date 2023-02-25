@@ -31,11 +31,7 @@ def balance(request):
 
     # Calculate total amount of balance for certain month.
     for transaction in Transaction.objects.all():
-        if transaction.active_month(date_shown.month) != None:
-            if transaction.type == "Expense":
-                amount -= transaction.active_month(date_shown.month)
-            elif transaction.type == "Income":
-                amount += transaction.active_month(date_shown.month)
+        amount += transaction.active_month(date_shown.month, date_shown.year)
 
     return render(request, "balance/balance.html", {"amount": amount, "month": date_shown.strftime("%B"),
                                                     "year": date_shown.strftime("%Y"), "next_month": next_month_int,
@@ -70,11 +66,8 @@ def balance_diff_month(request, monthyear=month_year_int):
     prev_month_int = int(str(prev_month.month) + str(prev_month.year))
 
     for transaction in Transaction.objects.all():
-        if transaction.active_month(date_shown.month) != None:
-            if transaction.type == "Expense":
-                amount -= transaction.active_month(date_shown.month)
-            elif transaction.type == "Income":
-                amount += transaction.active_month(date_shown.month)
+        amount += transaction.active_month(date_shown.month,
+                                           date_shown.year)
 
     return render(request, "balance/balance.html", {"amount": amount, "month": date_shown.strftime("%B"),
                                                     "year": date_shown.strftime("%Y"), "next_month": next_month_int,

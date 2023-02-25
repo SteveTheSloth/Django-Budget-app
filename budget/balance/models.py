@@ -56,156 +56,109 @@ class Transaction(models.Model):
 
     def day_balance(self, month, year):
 
-        increase_week = timedelta(weeks=1)
-        due_date = self.due_date
-        dayly_transaction_dict = dict()
-
         if self.due_date.month > month and self.due_date.year >= year or self.type == "Loan":
-            return dayly_transaction_dict
+            return dict()
         if self.end_date != None:
             if self.end_date.month < month and self.end_date.year <= year:
-                return dayly_transaction_dict
+                return dict()
 
         if self.repeat_pattern == "one off":
-            if self.type == "Expense":
-                dayly_transaction_dict[self.due_date.day] = [-self.amount]
-            else:
-                dayly_transaction_dict[self.due_date.day] = [self.amount]
+            return self.one_off_day()
 
-        if self.repeat_pattern == "monthly":
-            if self.type == "Expense":
-                dayly_transaction_dict[self.due_date.day] = [-self.amount]
-            else:
-                dayly_transaction_dict[self.due_date.day] = [self.amount]
+        elif self.repeat_pattern == "monthly":
+            return self.one_off_day()
 
         elif self.repeat_pattern == "weekly":
-            while due_date.month != month:
-                due_date += increase_week
-
-            while due_date.month == month:
-
-                if self.type == "Expense":
-                    dayly_transaction_dict[due_date.day] = [-self.amount]
-                else:
-                    dayly_transaction_dict[due_date.day] = [self.amount]
-
-                due_date += increase_week
+            return self.weekly_day(month, timedelta(weeks=1))
 
         elif self.repeat_pattern == "every two weeks":
-            increase_week = timedelta(weeks=2)
-
-            while due_date.month != month:
-                due_date += increase_week
-
-            while due_date.month == month:
-
-                if self.type == "Expense":
-                    dayly_transaction_dict[due_date.day] = [-self.amount]
-                else:
-                    dayly_transaction_dict[due_date.day] = [self.amount]
-
-                due_date += increase_week
+            return self.weekly_day(month, timedelta(weeks=2))
 
         elif self.repeat_pattern == "every three weeks":
-            increase_week = timedelta(weeks=3)
-
-            while due_date.month != month:
-                due_date += increase_week
-
-            while due_date.month == month:
-
-                if self.type == "Expense":
-                    dayly_transaction_dict[due_date.day] = [-self.amount]
-                else:
-                    dayly_transaction_dict[due_date.day] = [self.amount]
-
-                due_date += increase_week
+            return self.weekly_day(month, timedelta(weeks=3))
 
         else:
-            increase_week = timedelta(weeks=4)
+            return self.weekly_day(month, timedelta(weeks=4))
 
-            while due_date.month != month:
-                due_date += increase_week
+    def one_off_day(self):
+        dayly_transaction_dict = dict()
 
-            while due_date.month == month:
-
-                if self.type == "Expense":
-                    dayly_transaction_dict[due_date.day] = [-self.amount]
-                else:
-                    dayly_transaction_dict[due_date.day] = [self.amount]
-
-                due_date += increase_week
+        if self.type == "Expense":
+            dayly_transaction_dict[self.due_date.day] = [-self.amount]
+        else:
+            dayly_transaction_dict[self.due_date.day] = [self.amount]
 
         return dayly_transaction_dict
 
-    def active_month(self, month):
-        if self.end_date != None:
-            if self.end_date.month < month or self.due_date.month > month:
-                return None
+    def weekly_day(self, month, delta):
+        due_date = self.due_date
+        dayly_transaction_dict = dict()
 
-        if self.repeat_pattern == "one off":
-            if self.due_date.month == month:
-                return self.amount
+        while due_date.month != month:
+            due_date += delta
 
-        elif self.repeat_pattern == "monthly":
-            return self.amount
+        while due_date.month == month:
 
-        elif self.repeat_pattern == "weekly":
+            if self.type == "Expense":
+                dayly_transaction_dict[due_date.day] = [-self.amount]
+            else:
+                dayly_transaction_dict[due_date.day] = [self.amount]
 
-            due_in_month = self.due_date
-            week = timedelta(weeks=1)
-            amount = 0
+            due_date += delta
 
-            while due_in_month.month != month:
-                due_in_month += week
+        return dayly_transaction_dict
 
-            while due_in_month.month == month:
-                amount += self.amount
-                due_in_month += week
+    def active_month(self, month=date.today().month, year=date.today().year):
 
-            return amount
+        if self.due_date.month > month and self.due_date.year >= year or self.type == "Loan":
+            return 0
+        elif self.end_date != None:
+            if self.end_date.month < month and self.end_date.year <= year:
+                return 0
+            else:
+                pass
 
-        elif self.repeat_pattern == "every two weeks":
+        else:
 
-            due_in_month = self.due_date
-            weeks = timedelta(weeks=2)
-            amount = 0
+            if self.repeat_pattern == "one off":
+                if self.due_date.month == month:
+                    if self.type == "Expense":
+                        return -self.amount
+                    else:
+                        return self.amount
+                else:
+                    return 0
 
-            while due_in_month.month != month:
-                due_in_month += weeks
+            elif self.repeat_pattern == "monthly":
+                if self.type == "Expense":
+                    return -self.amount
+                else:
+                    return self.amount
 
-            while due_in_month.month == month:
-                amount += self.amount
-                due_in_month += weeks
+            elif self.repeat_pattern == "weekly":
+                return self.weekly_month(month, timedelta(weeks=1))
 
-            return amount
+            elif self.repeat_pattern == "every two weeks":
+                return self.weekly_month(month, timedelta(weeks=2))
 
-        elif self.repeat_pattern == "every three weeks":
+            elif self.repeat_pattern == "every three weeks":
+                return self.weekly_month(month, timedelta(weeks=3))
 
-            due_in_month = self.due_date
-            weeks = timedelta(weeks=3)
-            amount = 0
+            else:
+                return self.weekly_month(month, timedelta(weeks=4))
 
-            while due_in_month.month != month:
-                due_in_month += weeks
+    def weekly_month(self, month, delta):
+        due_date = self.due_date
+        amount = 0
 
-            while due_in_month.month == month:
-                amount += self.amount
-                due_in_month += weeks
+        while due_date.month != month:
+            due_date += delta
 
-            return amount
+        while due_date.month == month:
+            amount += self.amount
+            due_date += delta
 
-        elif self.repeat_pattern == "every four weeks":
-
-            due_in_month = self.due_date
-            weeks = timedelta(weeks=4)
-            amount = 0
-
-            while due_in_month.month != month:
-                due_in_month += weeks
-
-            while due_in_month.month == month:
-                amount += self.amount
-                due_in_month += weeks
-
+        if self.type == "Expense":
+            return -amount
+        else:
             return amount
