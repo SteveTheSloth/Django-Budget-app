@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("balance", "0005_alter_transaction_due_date_alter_transaction_email_and_more"),
     ]

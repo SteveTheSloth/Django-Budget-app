@@ -1,6 +1,13 @@
 from datetime import date
 
-from django.forms import ModelForm, DateInput, TimeInput, TextInput, IntegerField, Select
+from django.forms import (
+    ModelForm,
+    DateInput,
+    TimeInput,
+    TextInput,
+    IntegerField,
+    Select,
+)
 from django.core.exceptions import ValidationError
 
 from .models import Transaction
@@ -10,8 +17,7 @@ class TransactionForm(ModelForm):
     class Meta:
         model = Transaction
         fields = "__all__"
-        widgets = {
-        }
+        widgets = {}
 
     def clean_date(self):
         d = self.cleaned_data.get("end_date")

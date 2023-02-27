@@ -14,6 +14,11 @@
         </table>
         {% csrf_token %}
         <button type="submit">Edit</button>
+        
+
+    </form>
+    <form action="{% url 'delete_check' transaction.id %}">
+        <button type="submit">Delete</button>
     </form>
 
     <nav>
@@ -25,7 +30,7 @@
         <a href="{% url 'lent' %}">Back to I.O.U.s</a>
         {% endif %}
         <a href="{% url 'welcome' %}">Home</a>
-        <a href="{% url 'balance_now' %}">Balance</a>
+        <a href="{% url 'balance' %}">Balance</a>
     </nav>
 </body>
 </html>

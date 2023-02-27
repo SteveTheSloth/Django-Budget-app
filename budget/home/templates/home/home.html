@@ -6,38 +6,14 @@
     <meta charset="UTF-8">
     <title>Budget Planner</title>
 
-    <link rel="stylesheet" href="../../static/home/home.css">
+    <!-- <link rel="stylesheet" href="../../static/home/home.css"> -->
 
 </head>
 
 <body>
 
     <h1>Budget Planner</h1>
-
-    <table>expenses</table>
-    <table>
-    {% for key, value in expenses %}
-        <th>{{key}}</th>
-        {% for v in value %}
-            <td>{{v}}</td>
-            <td></td>
-        {% endfor %}
-    <tr></tr>
-    {% endfor %}
-
-    </table>
-
-    <h3>incomes</h3>
-    <table>
-        {% for key, value in incomes %}
-            <th>{{key}}</th>
-            {% for v in value %}
-                <td>{{v}}</td>
-                <td></td>
-            {% endfor %}
-        <tr></tr>
-        {% endfor %}
-    
+   
     </table>
 
     <div class="container">
@@ -45,12 +21,13 @@
         <div class="calendar">
 
             <header>
+                <h2>
+                <a class="btn-prev fontawesome-angle-left" href="{% url 'welcome' prev_month %}"><</a>
+                {{month}} {{year}}
 
-                <h2>April</h2>
-
-                <a class="btn-prev fontawesome-angle-left" href="#"></a>
-                <a class="btn-next fontawesome-angle-right" href="#"></a>
-
+                
+                <a class="btn-next fontawesome-angle-right" href="{% url 'welcome' next_month %}">></a>
+                </h2>
             </header>
 
             <table>
@@ -59,13 +36,13 @@
 
                     <tr>
 
-                        <td>Mo</td>
-                        <td>Tu</td>
-                        <td>We</td>
-                        <td>Th</td>
-                        <td>Fr</td>
-                        <td>Sa</td>
-                        <td>Su</td>
+                        <td class="day">Mo</td>
+                        <td class="day">Tu</td>
+                        <td class="day">We</td>
+                        <td class="day">Th</td>
+                        <td class="day">Fr</td>
+                        <td class="day">Sa</td>
+                        <td class="day">Su</td>
 
                     </tr>
 
@@ -74,55 +51,131 @@
                 <tbody>
 
                     <tr>
-                        <td class="prev-month">29</td>
-                        <td class="prev-month">30</td>
-                        <td class="prev-month">31</td>
+                        {% for i in last_days %}
+                            <td class="prev-month"><ul>{{ i }}</ul></td>
+                        {% endfor %}
 
-                        <td>1</td>
-                        <td>2</td>
-                        <td>3</td>
-                        <td>4</td>
+                        {% for day, due in first_week %}
+                            <td><ul>{{day}}
+                            {% if due != None %}
+                                {% for i in due %}
+                                    {% if i < 0 %}
+                                        <li class="bill">{{i}}</li>
+                                    {% else %}
+                                        <li class="income">{{i}}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            </ul></td>
+                        {% endfor %}
+
                     </tr>
                     <tr>
 
-                        <td>5</td>
-                        <td>6</td>
-                        <td>7</td>
-                        <td>8</td>
-                        <td class="event">9</td>
-                        <td class="current-day event">10</td>
-                        <td>11</td>
+                        {% for day, due in second_week %}
+                            <td><ul>{{day}}
+                            {% if due != None %}
+                                {% for i in due %}
+                                    {% if i < 0 %}
+                                        <li class="bill">{{i}}</li>
+                                    {% else %}
+                                        <li class="income">{{i}}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            </ul></td>
+                        {% endfor %}
                     </tr>
                     <tr>
-                        <td>12</td>
-                        <td>13</td>
-                        <td>14</td>
-                        <td>15</td>
-                        <td>16</td>
-                        <td>17</td>
-                        <td>18</td>
+                        {% for day, due in third_week %}
+                            <td><ul>{{day}}
+                            {% if due != None %}
+                                {% for i in due %}
+                                    {% if i < 0 %}
+                                        <li class="bill">{{i}}</li>
+                                    {% else %}
+                                        <li class="income">{{i}}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            </ul></td>
+                        {% endfor %}
                     </tr>
                     <tr>
 
-                        <td>19</td>
-                        <td>20</td>
-                        <td>21</td>
-                        <td class="event">22</td>
-                        <td>23</td>
-                        <td>24</td>
-                        <td>25</td>
+                        {% for day, due in fourth_week %}
+                            <td><ul>{{day}}
+                            {% if due != None %}
+                                {% for i in due %}
+                                    {% if i < 0 %}
+                                        <li class="bill">{{i}}</li>
+                                    {% else %}
+                                        <li class="income">{{i}}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            </ul></td>
+                        {% endfor %}
+
                     </tr>
 
+                    {% if fifth_week != None %}
+                    
                     <tr>
 
-                        <td>26</td>
-                        <td>27</td>
-                        <td>28</td>
-                        <td>29</td>
-                        <td>30</td>
-                        <td class="next-month">1</td>
-                        <td class="next-month">2</td>
+                        {% for day, due in fifth_week %}
+
+                            <td><ul>{{day}}
+                            {% if due != None %}
+                                {% for i in due %}
+                                    {% if i < 0 %}
+                                        <li class="bill">{{i}}</li>
+                                    {% else %}
+                                        <li class="income">{{i}}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            </ul></td>
+
+                        {% endfor %}
+
+                        {% for i in first_days %}
+                            <td class="next-month"><ul>{{i}}</ul></td>
+                        {% endfor %}
+
+
                     </tr>
+                    {% endif %}
+
+
+                    {% if sixth_week != None %}
+                    <tr>
+
+
+                        {% for day, due in sixth_week %}
+
+                            <td><ul>{{day}}
+                            {% if due != None %}
+                                {% for i in due %}
+                                    {% if i < 0 %}
+                                        <li class="bill">{{i}}</li>
+                                    {% else %}
+                                        <li class="income">{{i}}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            </ul></td>
+
+                        {% endfor %}
+
+
+                        {% for i in first_days %}
+                            <td class="next-month"><ul>{{i}}</ul></td>
+                        {% endfor %}
+
+                    </tr>
+                    {% endif %}
+                    
 
                 </tbody>
 
@@ -132,7 +185,7 @@
 
     </div> <!-- end container -->
     <nav>
-        <a href="{% url 'balance_now' %}">Balance</a>
+        <a href="{% url 'balance' %}">Balance</a>
         <a href="{% url 'bills' %}">Bills</a>
         <a href="{% url 'incomes' %}">Incomes</a>
         <a href="{% url 'lent' %}">I.O.U.</a>

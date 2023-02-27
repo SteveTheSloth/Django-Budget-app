@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("balance", "0010_remove_transaction_repeat_pattern_and_more"),
     ]

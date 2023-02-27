@@ -32,6 +32,11 @@
             <button type="submit">Edit</button>
         </form>
     </td>
+    <td>
+        <form action="{% url 'delete_check' transaction.id %}">
+            <button type="submit">Delete</button>
+        </form>
+    </td>
     <nav>
         {% if transaction.type == "Expense" %}
         <a href="{% url 'bills' %}">Back to Bills</a>
@@ -41,7 +46,7 @@
         <a href="{% url 'lent' %}">Back to I.O.U.s</a>
         {% endif %}
         <a href="{% url 'welcome' %}">Home</a>
-        <a href="{% url 'balance_now' %}">Balance</a>
+        <a href="{% url 'balance' %}">Balance</a>
     </nav>
 </body>
 </html> 

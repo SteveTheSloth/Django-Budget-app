@@ -20,5 +20,6 @@ from home.views import welcome
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("", welcome, name="welcome"),
+    path("month/<int:monthyear>", welcome, name="welcome"),
     path("balance/", include("balance.urls")),
 ]

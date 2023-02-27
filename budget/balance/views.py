@@ -11,35 +11,8 @@ year_str = str(date.today().year)
 month_year_int = int(month_str + year_str)
 
 
-def balance(request):
-    amount = 0
-    date_shown = date.today()
-
-    # Create previous and next month to pass to template to skip through months.
-    if date_shown.month not in (1, 12):
-        next_month = date_shown.replace(month=date_shown.month+1)
-        prev_month = date_shown.replace(month=date_shown.month-1)
-    elif date_shown.month == 12:
-        next_month = date_shown.replace(year=date_shown.year+1, month=1)
-        prev_month = date_shown.replace(month=date_shown.month-1)
-    else:
-        next_month = date_shown.replace(month=2)
-        prev_month = date_shown.replace(year=date_shown.year-1, month=12)
-
-    next_month_int = int(str(next_month.month) + str(next_month.year))
-    prev_month_int = int(str(prev_month.month) + str(prev_month.year))
-
-    # Calculate total amount of balance for certain month.
-    for transaction in Transaction.objects.all():
-        amount += transaction.active_month(date_shown.month, date_shown.year)
-
-    return render(request, "balance/balance.html", {"amount": amount, "month": date_shown.strftime("%B"),
-                                                    "year": date_shown.strftime("%Y"), "next_month": next_month_int,
-                                                    "prev_month": prev_month_int})
-
-
-def balance_diff_month(request, monthyear=month_year_int):
-    """Same functionality as balance, takes monthyear=int(myyyy) as argument to display month in past
+def balance(request, monthyear=month_year_int):
+    """Same functionality as balance, takes monthyear=int(myyyy/mmyyyy) as argument to display month in past
     or future."""
 
     amount = 0
@@ -53,29 +26,39 @@ def balance_diff_month(request, monthyear=month_year_int):
     date_shown = date.today().replace(year=show_year, month=show_month)
 
     if show_month not in (1, 12):
-        next_month = date_shown.replace(month=show_month+1)
-        prev_month = date_shown.replace(month=show_month-1)
+        next_month = date_shown.replace(month=show_month + 1)
+        prev_month = date_shown.replace(month=show_month - 1)
     elif show_month == 12:
-        next_month = date_shown.replace(year=show_year+1, month=1)
-        prev_month = date_shown.replace(month=show_month-1)
+        next_month = date_shown.replace(year=show_year + 1, month=1)
+        prev_month = date_shown.replace(month=show_month - 1)
     else:
         next_month = date_shown.replace(month=2)
-        prev_month = date_shown.replace(year=show_year-1, month=12)
+        prev_month = date_shown.replace(year=show_year - 1, month=12)
 
     next_month_int = int(str(next_month.month) + str(next_month.year))
     prev_month_int = int(str(prev_month.month) + str(prev_month.year))
 
     for transaction in Transaction.objects.all():
-        amount += transaction.active_month(date_shown.month,
-                                           date_shown.year)
+        amount += transaction.active_month(date_shown.month, date_shown.year)
 
-    return render(request, "balance/balance.html", {"amount": amount, "month": date_shown.strftime("%B"),
-                                                    "year": date_shown.strftime("%Y"), "next_month": next_month_int,
-                                                    "prev_month": prev_month_int})
+    return render(
+        request,
+        "balance/balance.html",
+        {
+            "amount": amount,
+            "month": date_shown.strftime("%B"),
+            "year": date_shown.strftime("%Y"),
+            "next_month": next_month_int,
+            "prev_month": prev_month_int,
+        },
+    )
 
 
 def bills(request):
-    return render(request, "balance/bills.html", {"transactions": Transaction.objects.all()})
+    return render(
+        request, "balance/bills.html", {
+            "transactions": Transaction.objects.all()}
+    )
 
 
 def delete_check(request, id):
@@ -97,7 +80,10 @@ def details(request, id):
     transaction = get_object_or_404(Transaction, pk=id)
     items = transaction.dict().items()
 
-    return render(request, "balance/details.html", {"transaction": transaction, "items": items})
+    return render(
+        request, "balance/details.html", {
+            "transaction": transaction, "items": items}
+    )
 
 
 def editform(request, id):
@@ -117,11 +103,13 @@ def editform(request, id):
     else:
         form = TransactionForm(initial=transaction.__dict__)
 
-    return render(request, "balance/editform.html", {"transaction": transaction, "form": form})
+    return render(
+        request, "balance/editform.html", {
+            "transaction": transaction, "form": form}
+    )
 
 
 def form(request):
-
     if request.method == "POST":
         form = TransactionForm(request.POST)
 
@@ -135,8 +123,14 @@ def form(request):
 
 
 def incomes(request):
-    return render(request, "balance/incomes.html", {"transactions": Transaction.objects.all()})
+    return render(
+        request, "balance/incomes.html", {
+            "transactions": Transaction.objects.all()}
+    )
 
 
 def lent(request):
-    return render(request, "balance/lent.html", {"transactions": Transaction.objects.all()})
+    return render(
+        request, "balance/lent.html", {
+            "transactions": Transaction.objects.all()}
+    )

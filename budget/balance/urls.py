@@ -15,17 +15,26 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from .views import balance, balance_diff_month, bills, details, incomes, lent, form, editform, delete_check
+from .views import (
+    balance,
+    bills,
+    details,
+    incomes,
+    lent,
+    form,
+    editform,
+    delete_check,
+)
 
 
 urlpatterns = [
-    path("", balance, name="balance_now"),
-    path("month/<int:monthyear>", balance_diff_month, name="balance_diff_month"),
+    path("", balance, name="balance"),
+    path("month/<int:monthyear>", balance, name="balance"),
     path("bills", bills, name="bills"),
     path("details/<int:id>/", details, name="details"),
     path("incomes", incomes, name="incomes"),
     path("lent", lent, name="lent"),
     path("form", form, name="form"),
     path("<int:id>/edit", editform, name="editform"),
-    path("<int:id>/deletecheck", delete_check, name="delete_check")
+    path("<int:id>/deletecheck", delete_check, name="delete_check"),
 ]
