@@ -24,8 +24,6 @@
                 <h2>
                 <a class="btn-prev fontawesome-angle-left" href="{% url 'welcome' prev_month %}"><</a>
                 {{month}} {{year}}
-
-                
                 <a class="btn-next fontawesome-angle-right" href="{% url 'welcome' next_month %}">></a>
                 </h2>
             </header>
@@ -55,7 +53,8 @@
                             <td class="prev-month"><ul>{{ i }}</ul></td>
                         {% endfor %}
 
-                        {% for day, due in first_week %}
+                        {% for week in weeks %}
+                        {% for day, due in week %}
                             <td><ul>{{day}}
                             {% if due != None %}
                                 {% for i in due %}
@@ -68,113 +67,17 @@
                             {% endif %}
                             </ul></td>
                         {% endfor %}
-
-                    </tr>
-                    <tr>
-
-                        {% for day, due in second_week %}
-                            <td><ul>{{day}}
-                            {% if due != None %}
-                                {% for i in due %}
-                                    {% if i < 0 %}
-                                        <li class="bill">{{i}}</li>
-                                    {% else %}
-                                        <li class="income">{{i}}</li>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                            </ul></td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-                        {% for day, due in third_week %}
-                            <td><ul>{{day}}
-                            {% if due != None %}
-                                {% for i in due %}
-                                    {% if i < 0 %}
-                                        <li class="bill">{{i}}</li>
-                                    {% else %}
-                                        <li class="income">{{i}}</li>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                            </ul></td>
-                        {% endfor %}
-                    </tr>
-                    <tr>
-
-                        {% for day, due in fourth_week %}
-                            <td><ul>{{day}}
-                            {% if due != None %}
-                                {% for i in due %}
-                                    {% if i < 0 %}
-                                        <li class="bill">{{i}}</li>
-                                    {% else %}
-                                        <li class="income">{{i}}</li>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                            </ul></td>
+                        <tr></tr>
                         {% endfor %}
 
                     </tr>
-
-                    {% if fifth_week != None %}
                     
-                    <tr>
-
-                        {% for day, due in fifth_week %}
-
-                            <td><ul>{{day}}
-                            {% if due != None %}
-                                {% for i in due %}
-                                    {% if i < 0 %}
-                                        <li class="bill">{{i}}</li>
-                                    {% else %}
-                                        <li class="income">{{i}}</li>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                            </ul></td>
-
-                        {% endfor %}
-
-                        {% for i in first_days %}
-                            <td class="next-month"><ul>{{i}}</ul></td>
-                        {% endfor %}
-
-
-                    </tr>
-                    {% endif %}
-
-
-                    {% if sixth_week != None %}
-                    <tr>
-
-
-                        {% for day, due in sixth_week %}
-
-                            <td><ul>{{day}}
-                            {% if due != None %}
-                                {% for i in due %}
-                                    {% if i < 0 %}
-                                        <li class="bill">{{i}}</li>
-                                    {% else %}
-                                        <li class="income">{{i}}</li>
-                                    {% endif %}
-                                {% endfor %}
-                            {% endif %}
-                            </ul></td>
-
-                        {% endfor %}
-
 
                         {% for i in first_days %}
                             <td class="next-month"><ul>{{i}}</ul></td>
                         {% endfor %}
 
                     </tr>
-                    {% endif %}
                     
 
                 </tbody>
@@ -186,10 +89,10 @@
     </div> <!-- end container -->
     <nav>
         <a href="{% url 'balance' %}">Balance</a>
-        <a href="{% url 'bills' %}">Bills</a>
+        <a href="{% url 'expenses' %}">Bills</a>
         <a href="{% url 'incomes' %}">Incomes</a>
-        <a href="{% url 'lent' %}">I.O.U.</a>
-        <a href="{% url 'form' %}">Add new Transaction</a>
+        <a href="{% url 'loans' %}">I.O.U.</a>
+        <a href="{% url 'create' %}">Add new Transaction</a>
     </nav>
     
 

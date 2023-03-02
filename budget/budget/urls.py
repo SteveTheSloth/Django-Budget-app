@@ -14,12 +14,18 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.views.generic import MonthArchiveView
 from django.urls import path, include
-from home.views import welcome
+from home.views import HomeView
+from balance.models import Transaction
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", welcome, name="welcome"),
-    path("month/<int:monthyear>", welcome, name="welcome"),
+    path("", HomeView.as_view(queryset=Transaction.objects.all(),
+         template_name="home/home.html"), name="welcome"),
+    path("<int:monthyear>", HomeView.as_view(queryset=Transaction.objects.all(),
+         template_name="home/home.html"), name="welcome"),
+    path("test/<int:year>/<int:month>/", MonthArchiveView.as_view(
+        queryset=Transaction.objects.all(), date_field="due_date", month_format="%m", template_name="home/test.html", allow_future=True), name="test"),
     path("balance/", include("balance.urls")),
 ]

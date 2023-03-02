@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{transaction.name}}</title>
+    <title>{{object.name}}</title>
 </head>
 <body>
-    <h1>Details for {{transaction.name}}</h1>
+    <h1>Details for {{object.name}}</h1>
     <br>
     <table>
-        {% for key, value in items %}
+        {% for key, value in items_dict %}
         <th>{{ key }}</th>
         {% if value != None %}
         
@@ -28,22 +28,22 @@
     </table>
 
     <td>
-        <form action="{% url 'editform' transaction.id %}">
+        <form action="{% url 'update' object.id %}">
             <button type="submit">Edit</button>
         </form>
     </td>
     <td>
-        <form action="{% url 'delete_check' transaction.id %}">
+        <form action="{% url 'delete' object.id %}">
             <button type="submit">Delete</button>
         </form>
     </td>
     <nav>
-        {% if transaction.type == "Expense" %}
-        <a href="{% url 'bills' %}">Back to Bills</a>
-        {% elif transaction.type == "Income" %}
+        {% if object.transaction_type == "Expense" %}
+        <a href="{% url 'expenses' %}">Back to Bills</a>
+        {% elif object.transaction_type == "Income" %}
         <a href="{% url 'incomes' %}">Back to Incomes</a>
         {% else %}
-        <a href="{% url 'lent' %}">Back to I.O.U.s</a>
+        <a href="{% url 'loans' %}">Back to I.O.U.s</a>
         {% endif %}
         <a href="{% url 'welcome' %}">Home</a>
         <a href="{% url 'balance' %}">Balance</a>

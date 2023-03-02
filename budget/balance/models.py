@@ -16,7 +16,8 @@ repeat_patterns = (
 
 
 class Transaction(models.Model):
-    type = models.CharField(max_length=25, choices=types, default="Expense")
+    transaction_type = models.CharField(
+        max_length=25, choices=types, default="Expense")
     name = models.CharField(max_length=200)
     purpose = models.CharField(max_length=200)
     amount = models.FloatField(max_length=6)
@@ -30,6 +31,14 @@ class Transaction(models.Model):
     end_date = models.DateField(blank=True, null=True)
     date_added = models.DateField(auto_now_add=True, editable=False)
 
+    @property
+    def monthamount(self, month, year):
+        amount_dict = self.active_month(month, year)
+        amount = 0
+        for value in amount_dict.values():
+            amount += value
+        return amount
+
     def __str__(self):
         return f"{self.name}"
 
@@ -37,7 +46,7 @@ class Transaction(models.Model):
         attributes = {
             "Name": self.name,
             "Purpose": self.purpose,
-            "Type": self.type,
+            "Type": self.transaction_type,
             "Amount": self.amount,
             "Due On": self.due_date,
             "Repeat Pattern": self.repeat_pattern,
@@ -51,7 +60,7 @@ class Transaction(models.Model):
 
     def day_balance(self, month, year):
         if (
-            self.type == "Loan"
+            self.transaction_type == "Loan"
             or self.due_date.month > month
             and self.due_date.year >= year
             or self.due_date.year > year
@@ -82,7 +91,7 @@ class Transaction(models.Model):
     def one_off_day(self):
         dayly_transaction_dict = dict()
 
-        if self.type == "Expense":
+        if self.transaction_type == "Expense":
             dayly_transaction_dict[self.due_date.day] = -self.amount
         else:
             dayly_transaction_dict[self.due_date.day] = self.amount
@@ -97,7 +106,7 @@ class Transaction(models.Model):
             due_date += delta
 
         while due_date.month == month:
-            if self.type == "Expense":
+            if self.transaction_type == "Expense":
                 dayly_transaction_dict[due_date.day] = -self.amount
             else:
                 dayly_transaction_dict[due_date.day] = self.amount
@@ -110,7 +119,7 @@ class Transaction(models.Model):
         if (
             self.due_date.month > month
             and self.due_date.year >= year
-            or self.type == "Loan"
+            or self.transaction_type == "Loan"
         ):
             return 0
         elif self.end_date != None:
@@ -122,7 +131,7 @@ class Transaction(models.Model):
         else:
             if self.repeat_pattern == "one off":
                 if self.due_date.month == month:
-                    if self.type == "Expense":
+                    if self.transaction_type == "Expense":
                         return -self.amount
                     else:
                         return self.amount
@@ -130,7 +139,7 @@ class Transaction(models.Model):
                     return 0
 
             elif self.repeat_pattern == "monthly":
-                if self.type == "Expense":
+                if self.transaction_type == "Expense":
                     return -self.amount
                 else:
                     return self.amount
@@ -158,7 +167,7 @@ class Transaction(models.Model):
             amount += self.amount
             due_date += delta
 
-        if self.type == "Expense":
+        if self.transaction_type == "Expense":
             return -amount
         else:
             return amount

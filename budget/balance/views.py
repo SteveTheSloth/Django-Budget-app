@@ -1,136 +1,107 @@
 from django.shortcuts import redirect, render, get_object_or_404
+from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 
 # Create your views here.
 
 from datetime import date
 from .models import Transaction
-from .form import TransactionForm
 
 month_str = str(date.today().month)
 year_str = str(date.today().year)
 month_year_int = int(month_str + year_str)
 
 
-def balance(request, monthyear=month_year_int):
-    """Same functionality as balance, takes monthyear=int(myyyy/mmyyyy) as argument to display month in past
-    or future."""
+class BalanceView(ListView):
 
-    amount = 0
-    if len(str(monthyear)) == 6:
-        show_year = int(str(monthyear)[-4:])
-        show_month = int(str(monthyear)[:2])
-    else:
-        show_year = int(str(monthyear)[-4:])
-        show_month = int(str(monthyear)[:1])
+    @property
+    def show_month(self):
+        try:
+            month_year = self.kwargs["monthyear"]
 
-    date_shown = date.today().replace(year=show_year, month=show_month)
-
-    if show_month not in (1, 12):
-        next_month = date_shown.replace(month=show_month + 1)
-        prev_month = date_shown.replace(month=show_month - 1)
-    elif show_month == 12:
-        next_month = date_shown.replace(year=show_year + 1, month=1)
-        prev_month = date_shown.replace(month=show_month - 1)
-    else:
-        next_month = date_shown.replace(month=2)
-        prev_month = date_shown.replace(year=show_year - 1, month=12)
-
-    next_month_int = int(str(next_month.month) + str(next_month.year))
-    prev_month_int = int(str(prev_month.month) + str(prev_month.year))
-
-    for transaction in Transaction.objects.all():
-        amount += transaction.active_month(date_shown.month, date_shown.year)
-
-    return render(
-        request,
-        "balance/balance.html",
-        {
-            "amount": amount,
-            "month": date_shown.strftime("%B"),
-            "year": date_shown.strftime("%Y"),
-            "next_month": next_month_int,
-            "prev_month": prev_month_int,
-        },
-    )
-
-
-def bills(request):
-    return render(
-        request, "balance/bills.html", {
-            "transactions": Transaction.objects.all()}
-    )
-
-
-def delete_check(request, id):
-    transaction = get_object_or_404(Transaction, pk=id)
-    transaction_type = transaction.type
-
-    if request.method == "POST":
-        Transaction.delete(transaction)
-        if transaction_type == "Income":
-            return redirect("incomes")
-        elif transaction_type == "Expense":
-            return redirect("bills")
-        else:
-            return redirect("lent")
-    return render(request, "balance/deletecheck.html", {"transaction": transaction})
-
-
-def details(request, id):
-    transaction = get_object_or_404(Transaction, pk=id)
-    items = transaction.dict().items()
-
-    return render(
-        request, "balance/details.html", {
-            "transaction": transaction, "items": items}
-    )
-
-
-def editform(request, id):
-    transaction = get_object_or_404(Transaction, pk=id)
-
-    if request.method == "POST":
-        form = TransactionForm(request.POST, instance=transaction)
-
-        if form.is_valid():
-            form.save()
-            if transaction.type == "Income":
-                return redirect("incomes")
-            elif transaction.type == "Expense":
-                return redirect("bills")
+            if len(str(month_year)) == 6:
+                show_month = int(str(month_year)[:2])
             else:
-                return redirect("lent")
-    else:
-        form = TransactionForm(initial=transaction.__dict__)
+                show_month = int(str(month_year)[:1])
 
-    return render(
-        request, "balance/editform.html", {
-            "transaction": transaction, "form": form}
-    )
+        except KeyError:
+            show_month = int(month_str)
+
+        self._show_month = show_month
+        return self._show_month
+
+    @show_month.setter
+    def show_month(self, value):
+        self._show_month = value
+
+    @property
+    def show_year(self):
+        try:
+            month_year = self.kwargs["monthyear"]
+            self._show_year = int(str(month_year)[-4:])
+        except KeyError:
+            self._show_year = int(year_str)
+
+        return self._show_year
+
+    @show_year.setter
+    def show_year(self, value):
+        self._show_year = value
+
+    @property
+    def prev_month_year(self):
+        if self._show_month != 1:
+            self._prev_month_year = int(
+                str(self._show_month - 1) + str(self._show_year))
+        else:
+            self._prev_month_year = int(str(12) + str(self._show_year - 1))
+
+        return self._prev_month_year
+
+    @prev_month_year.setter
+    def prev_month_year(self, value):
+        self._prev_month_year = value
+
+    @property
+    def next_month_year(self):
+        if self._show_month != 12:
+            self._next_month_year = int(
+                str(self._show_month + 1) + str(self._show_year))
+        else:
+            self._next_month_year = int(str(1) + str(self._show_year + 1))
+
+        return self._next_month_year
+
+    @next_month_year.setter
+    def next_month_year(self, value):
+        self._next_month_year = value
+
+    def month_amount(self):
+
+        month_amount = 0
+        queryset = Transaction.objects.all()
+        for i in queryset:
+            month_amount += i.active_month(
+                month=self.show_month, year=self.show_year)
+        self.month_amount = month_amount
+        return self.month_amount
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["month_amount"] = self.month_amount()
+        context["show_month"] = date(
+            month=self.show_month, year=1, day=1).strftime("%B")
+        context["show_year"] = self.show_year
+        context["prev_month_year"] = self.prev_month_year
+        context["next_month_year"] = self.next_month_year
+        return context
 
 
-def form(request):
-    if request.method == "POST":
-        form = TransactionForm(request.POST)
+class TransactionDetailView(DetailView):
 
-        if form.is_valid():
-            form.save()
-            return redirect("balance")
-    else:
-        form = TransactionForm()
-
-    return render(request, "balance/form.html", {"form": form})
-
-
-def incomes(request):
-    return render(
-        request, "balance/incomes.html", {
-            "transactions": Transaction.objects.all()}
-    )
-
-
-def lent(request):
-    return render(
-        request, "balance/lent.html", {
-            "transactions": Transaction.objects.all()}
-    )
+    def get_context_data(self, **kwargs):
+        id = self.kwargs["pk"]
+        context = super().get_context_data(**kwargs)
+        transaction = self.get_object()
+        context["items_dict"] = transaction.dict().items()
+        return context

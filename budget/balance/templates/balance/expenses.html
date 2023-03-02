@@ -4,40 +4,37 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loans</title>
+    <title>Bills</title>
 </head>
 <body>
-    <h1>Loans</h1>
+    <h1>Bills</h1>
 
     <table>
-        {% for transaction in transactions %}
-        {%  if transaction.type == "Loan" %}
+        {% for transaction in object_list %}
         <th>{{ transaction.purpose }}</th>
         <td>{{ transaction.amount }}</td>
+        <td><a href="{% url 'details' transaction.id %}">{{ transaction.name }}</a></td>
         <td>
-            <a href="{% url 'details' transaction.id %}">{{ transaction.name }}</a>
-        </td>
-        <td>
-            <form action="{% url 'editform' transaction.id %}">
+            <form action="{% url 'update' transaction.id %}">
                 <button type="submit">Edit</button>
             </form>
         </td>
         <td>
-            <form action="{% url 'delete_check' transaction.id %}">
+            <form action="{% url 'delete' transaction.id %}">
                 <button type="submit">Delete</button>
             </form>
         </td>
         <tr></tr>
-        {% endif %}
         {% endfor %}
     </table>
 
     <nav>
         <a href="{% url 'welcome' %}">Home</a>
         <a href="{% url 'balance' %}">Balance</a>
-        <a href="{% url 'bills' %}">Bills</a>
         <a href="{% url 'incomes' %}">Incomes</a>
-        <a href="{% url 'form' %}">Add new Transaction</a>
+        <a href="{% url 'loans' %}">I.O.U.</a>
+        <a href="{% url 'create' %}">Add new Transaction</a>
     </nav>
+
 </body>
 </html>

@@ -15,26 +15,31 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.views.generic import UpdateView, DeleteView, CreateView, ListView
+from .models import Transaction
 from .views import (
-    balance,
-    bills,
-    details,
-    incomes,
-    lent,
-    form,
-    editform,
-    delete_check,
+    BalanceView,
+    TransactionDetailView,
 )
 
 
 urlpatterns = [
-    path("", balance, name="balance"),
-    path("month/<int:monthyear>", balance, name="balance"),
-    path("bills", bills, name="bills"),
-    path("details/<int:id>/", details, name="details"),
-    path("incomes", incomes, name="incomes"),
-    path("lent", lent, name="lent"),
-    path("form", form, name="form"),
-    path("<int:id>/edit", editform, name="editform"),
-    path("<int:id>/deletecheck", delete_check, name="delete_check"),
+    path("<int:monthyear>", BalanceView.as_view(queryset=Transaction.objects.all(), template_name="balance/balance.html"),
+         name="balance"),
+    path("", BalanceView.as_view(queryset=Transaction.objects.all(), template_name="balance/balance.html"),
+         name="balance"),
+    path("expenses", ListView.as_view(queryset=Transaction.objects.filter(transaction_type="Expense"),
+                                      template_name="balance/expenses.html"), name="expenses"),
+    path("incomes", ListView.as_view(queryset=Transaction.objects.filter(transaction_type="Income"),
+                                     template_name="balance/incomes.html"), name="incomes"),
+    path("loans", ListView.as_view(queryset=Transaction.objects.filter(transaction_type="Loan"),
+                                   template_name="balance/loans.html"), name="loans"),
+    path("details/<int:pk>/", TransactionDetailView.as_view(queryset=Transaction.objects.all(),
+         template_name="balance/details.html"), name="details"),
+    path("create", CreateView.as_view(
+        model=Transaction, fields="__all__", template_name="balance/create.html"), name="create"),
+    path("<int:pk>/update", UpdateView.as_view(queryset=Transaction.objects.all(),
+         template_name="balance/update.html", fields="__all__"), name="update"),
+    path("<int:pk>/delete", DeleteView.as_view(queryset=Transaction.objects.all(),
+         template_name="balance/delete.html"), name="delete"),
 ]
