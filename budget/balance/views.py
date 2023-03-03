@@ -1,6 +1,9 @@
-from django.shortcuts import redirect, render, get_object_or_404
+from django.shortcuts import redirect, render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from .forms import CreateTransactionForm
 
 # Create your views here.
 
@@ -12,7 +15,7 @@ year_str = str(date.today().year)
 month_year_int = int(month_str + year_str)
 
 
-class BalanceView(ListView):
+class BalanceView(LoginRequiredMixin, ListView):
 
     @property
     def show_month(self):
@@ -76,10 +79,14 @@ class BalanceView(ListView):
     def next_month_year(self, value):
         self._next_month_year = value
 
+    def get_queryset(self):
+        queryset = Transaction.objects.filter(user=self.request.user.id)
+        return queryset
+
     def month_amount(self):
 
         month_amount = 0
-        queryset = Transaction.objects.all()
+        queryset = self.get_queryset()
         for i in queryset:
             month_amount += i.active_month(
                 month=self.show_month, year=self.show_year)
@@ -97,7 +104,10 @@ class BalanceView(ListView):
         return context
 
 
-class TransactionDetailView(DetailView):
+class TransactionDetailView(LoginRequiredMixin, DetailView):
+    def get_queryset(self):
+        queryset = Transaction.objects.filter(user=self.request.user.id)
+        return queryset
 
     def get_context_data(self, **kwargs):
         id = self.kwargs["pk"]
@@ -105,3 +115,40 @@ class TransactionDetailView(DetailView):
         transaction = self.get_object()
         context["items_dict"] = transaction.dict().items()
         return context
+
+
+class ExpenseListView(LoginRequiredMixin, ListView):
+    def get_queryset(self):
+        queryset = Transaction.objects.filter(
+            user=self.request.user.id, transaction_type="Expense")
+        return queryset
+
+
+class IncomeListView(LoginRequiredMixin, ListView):
+    def get_queryset(self):
+        queryset = Transaction.objects.filter(
+            user=self.request.user.id, transaction_type="Income")
+        return queryset
+
+
+class LoanListView(LoginRequiredMixin, ListView):
+    def get_queryset(self):
+        queryset = Transaction.objects.filter(
+            user=self.request.user.id, transaction_type="Loan")
+        return queryset
+
+
+@login_required
+def create_transaction_view(request):
+    if request.method == "POST":
+        form = CreateTransactionForm(request.POST)
+
+        if form.is_valid():
+            newtrans = form.save(commit=False)
+            newtrans.user = request.user
+            newtrans.save()
+            form.save_m2m()
+            return redirect("balance")
+    else:
+        form = CreateTransactionForm()
+    return render(request, "balance/create.html", {"form": form})

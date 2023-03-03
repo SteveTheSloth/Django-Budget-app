@@ -1,6 +1,6 @@
 from django.db import models
 from datetime import timedelta, date
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 types = (("Income", "Income"), ("Expense", "Expense"), ("Loan", "Loan"))
@@ -16,6 +16,8 @@ repeat_patterns = (
 
 
 class Transaction(models.Model):
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     transaction_type = models.CharField(
         max_length=25, choices=types, default="Expense")
     name = models.CharField(max_length=200)

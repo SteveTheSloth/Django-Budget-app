@@ -14,18 +14,21 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.views.generic import MonthArchiveView
 from django.urls import path, include
-from home.views import HomeView
+from django.views.generic import TemplateView
+from home.views import WelcomeView, registration, login, logout
 from balance.models import Transaction
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", HomeView.as_view(queryset=Transaction.objects.all(),
-         template_name="home/home.html"), name="welcome"),
-    path("<int:monthyear>", HomeView.as_view(queryset=Transaction.objects.all(),
-         template_name="home/home.html"), name="welcome"),
-    path("test/<int:year>/<int:month>/", MonthArchiveView.as_view(
-        queryset=Transaction.objects.all(), date_field="due_date", month_format="%m", template_name="home/test.html", allow_future=True), name="test"),
-    path("balance/", include("balance.urls")),
-]
+    path("accounts/", include("django.contrib.auth.urls")),
+    path("", TemplateView.as_view(template_name="home/home.html"), name="home"),
+    path("welcome", WelcomeView.as_view(queryset=Transaction.objects.all(),
+         template_name="home/welcome.html"), name="welcome"),
+    path("welcome/<int:monthyear>", WelcomeView.as_view(queryset=Transaction.objects.all(),
+         template_name="home/welcome.html"), name="welcome"),
+    path("registration/register", registration, name="sign_up"),
+    path("balance/", include("balance.urls")),]
+
+'''     path("login", login, name="sign_in"),
+    path("logout", logout, name="logout"), '''

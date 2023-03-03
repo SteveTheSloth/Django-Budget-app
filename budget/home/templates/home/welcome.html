@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <title>Budget Planner</title>
+
+    <!-- <link rel="stylesheet" href="../../static/home/home.css"> -->
+
+</head>
+
+<body>
+
+    <h1>Budget Planner</h1>
+   
+    </table>
+
+    <div class="container">
+
+        <div class="calendar">
+
+            <header>
+                <h2>
+                <a class="btn-prev fontawesome-angle-left" href="{% url 'welcome' prev_month %}"><</a>
+                {{month}} {{year}}
+                <a class="btn-next fontawesome-angle-right" href="{% url 'welcome' next_month %}">></a>
+                </h2>
+            </header>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <td class="day">Mo</td>
+                        <td class="day">Tu</td>
+                        <td class="day">We</td>
+                        <td class="day">Th</td>
+                        <td class="day">Fr</td>
+                        <td class="day">Sa</td>
+                        <td class="day">Su</td>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        {% for i in last_days %}
+                            <td class="prev-month"><ul>{{ i }}</ul></td>
+                        {% endfor %}
+
+                        {% for week in weeks %}
+                        {% for day, due in week %}
+                            <td><ul>{{day}}
+                            {% if due != None %}
+                                {% for i in due %}
+                                    {% if i < 0 %}
+                                        <li class="bill">{{i}}</li>
+                                    {% else %}
+                                        <li class="income">{{i}}</li>
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            </ul></td>
+                        {% endfor %}
+                        <tr></tr>
+                        {% endfor %}
+
+                    </tr>
+                    
+
+                        {% for i in first_days %}
+                            <td class="next-month"><ul>{{i}}</ul></td>
+                        {% endfor %}
+
+                    </tr>
+                    
+
+                </tbody>
+
+            </table>
+
+        </div> <!-- end calendar -->
+
+    </div> <!-- end container -->
+    <nav>
+        <a href="{% url 'balance' %}">Balance</a>
+        <a href="{% url 'expenses' %}">Bills</a>
+        <a href="{% url 'incomes' %}">Incomes</a>
+        <a href="{% url 'loans' %}">I.O.U.</a>
+        <a href="{% url 'create' %}">Add new Transaction</a>
+    </nav>
+    
+
+</body>
+
+</html>

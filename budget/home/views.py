@@ -1,6 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
-from balance.views import Transaction
+from django.views.generic import CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth import login, logout, authenticate
+from balance.models import Transaction
+from user.forms import RegistrationForm, LoginForm
 from datetime import date
 import calendar
 
@@ -12,7 +16,7 @@ year_str = str(date.today().year)
 month_year_int = int(month_str + year_str)
 
 
-class HomeView(ListView):
+class WelcomeView(LoginRequiredMixin, ListView):
 
     @property
     def show_month(self):
@@ -152,3 +156,31 @@ class HomeView(ListView):
         context["prev_month"] = prev_month
         context["next_month"] = next_month
         return context
+
+
+def registration(request):
+
+    if request.method == "GET":
+        form = RegistrationForm()
+        return render(request, "registration/register.html", {"form": form})
+    elif request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.username = user.username.lower()
+            user.save()
+            login(request, user)
+            return redirect('welcome')
+        else:
+            return render(request, 'registration/register.html', {'form': form})
+
+
+def sign_in(request):
+    if request.method == "GET":
+        form = LoginForm()
+        return render(request, "home/login.html", {"form": form})
+
+
+def logout(request):
+    if request.method == "GET":
+        pass

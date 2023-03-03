@@ -16,30 +16,34 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.views.generic import UpdateView, DeleteView, CreateView, ListView
+from django.contrib.auth.decorators import login_required
 from .models import Transaction
 from .views import (
     BalanceView,
     TransactionDetailView,
+    ExpenseListView,
+    IncomeListView,
+    LoanListView,
+    create_transaction_view,
 )
 
 
 urlpatterns = [
-    path("<int:monthyear>", BalanceView.as_view(queryset=Transaction.objects.all(), template_name="balance/balance.html"),
+    path("<int:monthyear>", BalanceView.as_view(template_name="balance/balance.html"),
          name="balance"),
-    path("", BalanceView.as_view(queryset=Transaction.objects.all(), template_name="balance/balance.html"),
+    path("", BalanceView.as_view(template_name="balance/balance.html"),
          name="balance"),
-    path("expenses", ListView.as_view(queryset=Transaction.objects.filter(transaction_type="Expense"),
-                                      template_name="balance/expenses.html"), name="expenses"),
-    path("incomes", ListView.as_view(queryset=Transaction.objects.filter(transaction_type="Income"),
-                                     template_name="balance/incomes.html"), name="incomes"),
-    path("loans", ListView.as_view(queryset=Transaction.objects.filter(transaction_type="Loan"),
-                                   template_name="balance/loans.html"), name="loans"),
-    path("details/<int:pk>/", TransactionDetailView.as_view(queryset=Transaction.objects.all(),
+    path("expenses", ExpenseListView.as_view(
+        template_name="balance/expenses.html"), name="expenses"),
+    path("incomes", IncomeListView.as_view(
+        template_name="balance/incomes.html"), name="incomes"),
+    path("loans", LoanListView.as_view(
+        template_name="balance/loans.html"), name="loans"),
+    path("details/<int:pk>/", TransactionDetailView.as_view(
          template_name="balance/details.html"), name="details"),
-    path("create", CreateView.as_view(
-        model=Transaction, fields="__all__", template_name="balance/create.html"), name="create"),
-    path("<int:pk>/update", UpdateView.as_view(queryset=Transaction.objects.all(),
-         template_name="balance/update.html", fields="__all__"), name="update"),
-    path("<int:pk>/delete", DeleteView.as_view(queryset=Transaction.objects.all(),
-         template_name="balance/delete.html"), name="delete"),
+    path("create", create_transaction_view, name="create"),
+    path("<int:pk>/update", login_required(UpdateView.as_view(model=Transaction,
+         template_name="balance/update.html", fields="__all__")), name="update"),
+    path("<int:pk>/delete", login_required(DeleteView.as_view(model=Transaction,
+         template_name="balance/delete.html")), name="delete"),
 ]
