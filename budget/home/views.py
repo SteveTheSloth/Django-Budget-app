@@ -80,7 +80,7 @@ class WelcomeView(LoginRequiredMixin, ListView):
 
     def dayly_transactions(self):
         dayly_transactions_dict = dict()
-        for transaction in Transaction.objects.all():
+        for transaction in Transaction.objects.filter(user=self.request.user.id):
             for key, value in transaction.day_balance(self.show_month, self.show_year).items():
                 if key not in dayly_transactions_dict:
                     dayly_transactions_dict[key] = [value]

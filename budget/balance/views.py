@@ -80,7 +80,7 @@ class BalanceView(LoginRequiredMixin, ListView):
         self._next_month_year = value
 
     def get_queryset(self):
-        queryset = Transaction.objects.filter(user=self.request.user.id)
+        queryset = Transaction.objects.filter(user=self.request.user)
         return queryset
 
     def month_amount(self):
@@ -106,7 +106,7 @@ class BalanceView(LoginRequiredMixin, ListView):
 
 class TransactionDetailView(LoginRequiredMixin, DetailView):
     def get_queryset(self):
-        queryset = Transaction.objects.filter(user=self.request.user.id)
+        queryset = Transaction.objects.filter(user=self.request.user)
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -120,21 +120,21 @@ class TransactionDetailView(LoginRequiredMixin, DetailView):
 class ExpenseListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = Transaction.objects.filter(
-            user=self.request.user.id, transaction_type="Expense")
+            user=self.request.user, transaction_type="Expense")
         return queryset
 
 
 class IncomeListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = Transaction.objects.filter(
-            user=self.request.user.id, transaction_type="Income")
+            user=self.request.user, transaction_type="Income")
         return queryset
 
 
 class LoanListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = Transaction.objects.filter(
-            user=self.request.user.id, transaction_type="Loan")
+            user=self.request.user, transaction_type="Loan")
         return queryset
 
 

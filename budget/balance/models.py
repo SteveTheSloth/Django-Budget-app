@@ -17,7 +17,7 @@ repeat_patterns = (
 
 class Transaction(models.Model):
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, to_field="id")
     transaction_type = models.CharField(
         max_length=25, choices=types, default="Expense")
     name = models.CharField(max_length=200)

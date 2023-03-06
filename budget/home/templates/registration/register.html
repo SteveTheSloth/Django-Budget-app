@@ -7,9 +7,16 @@
     <title>Document</title>
 </head>
 <body>
+    {% if user.is_authenticated %}
+    <h3>Welcome {{user.username}}</h3>
+    <a href="{% url 'welcome' %}">Go to calendar view</a>
+    <a href="{% url 'logout'%}">Logout</a>
+
+    {% else %}
     <form method="post">{% csrf_token %}
         {{ form.as_p }}
         <input type="submit" value="Save">
     </form>
+    {% endif %}
 </body>
 </html>
