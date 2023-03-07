@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% if user.is_authenticated %}
+    <h3>Welcome {{user.username}}</h3>
+    
+    <h3>Login to an existing Group</h3>
+    {% if member %}
+    <h3>You are already a member of the Group {{ name }}!</h3>
+    {% endif %}
+    {% if group_exists %}
+    <h3>The Group {{ name }} does not exist yet. Do you want to <a href="{% url 'registration_group' %}">register a new group</a>?</h3>
+    {% endif %}
+    {% if wrong_password %}
+    <h3>The Password you entered is incorrect.</h3>
+    {% endif %}
+    <form method="post">{% csrf_token %}
+        <label for="Group Name">Group Name</label>
+        <input type="text" name="Group Name" value="{{ name }}">
+        <label for="password">Password</label>
+        <input type="text" name="Password" value="{{ password }}">
+        <input type="submit" value="Login">
+    </form>
+    {% endif %}
+</body>
+</html>

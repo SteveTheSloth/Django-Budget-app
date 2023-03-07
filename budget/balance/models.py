@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import timedelta, date
 from django.contrib.auth.models import User
+from user.models import UserGroup
 # Create your models here.
 
 types = (("Income", "Income"), ("Expense", "Expense"), ("Loan", "Loan"))
@@ -173,3 +174,8 @@ class Transaction(models.Model):
             return -amount
         else:
             return amount
+
+
+class GroupTransaction(Transaction):
+    group = models.ForeignKey(UserGroup,
+                              on_delete=models.CASCADE)

@@ -3,8 +3,10 @@ from django.views.generic.list import ListView
 from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.models import User
 from balance.models import Transaction
-from user.forms import RegistrationForm, LoginForm
+from user.models import UserGroup
+from user.forms import RegistrationForm, LoginForm, GroupRegistrationForm, GroupLoginForm
 from datetime import date
 import calendar
 
@@ -163,16 +165,16 @@ def registration(request):
     if request.method == "GET":
         form = RegistrationForm()
         return render(request, "registration/register.html", {"form": form})
-    elif request.method == 'POST':
+    elif request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
             user = form.save(commit=False)
             user.username = user.username.lower()
             user.save()
             login(request, user)
-            return redirect('welcome')
+            return redirect("welcome")
         else:
-            return render(request, 'registration/register.html', {'form': form})
+            return render(request, "registration/register.html", {"form": form})
 
 
 def sign_in(request):
@@ -184,3 +186,57 @@ def sign_in(request):
 def logout(request):
     if request.method == "GET":
         pass
+
+
+def registration_group(request):
+    if request.method == "GET":
+        form = GroupRegistrationForm()
+        return render(request, "registration/register_group.html", {"form": form})
+    elif request.method == "POST":
+        form = GroupRegistrationForm(request.POST)
+        if form.is_valid():
+            group = form.save()
+            group.members.add(User.objects.get(id=request.user.id))
+
+            return redirect("welcome")
+        else:
+            return render(request, "registration/register_group.html", {"form": form})
+
+
+def login_group(request):
+    if request.method == "GET":
+
+        return render(request, "registration/login_group.html")
+    elif request.method == "POST":
+
+        try:
+            group = UserGroup.objects.get(
+                name=request.POST.get("Group Name"))
+        except:
+            return render(request, "registration/login_group.html", {"group_exists": True,
+                                                                     "name": request.POST.get("Group Name")})
+        if request.POST.get("Password") == group.password:
+            try:
+                group.members.get(id=request.user.id)
+                return render(request, "registration/login_group.html",
+                              {"member": True, "name": request.POST.get("Group Name")})
+            except:
+                group.members.add(User.objects.get(id=request.user.id))
+                group.nr_of_members += 1
+                group.save()
+                return render(request, "registration/success_group.html", {"name": group.name})
+
+        else:
+            return render(request, "registration/login_group.html",
+                          {"wrong_password": True})
+
+
+def show_group_members(request):
+    if request.method == "GET":
+        group_names = dict()
+        groups = UserGroup.objects.all()
+        for i in groups:
+            group_names[i.name] = i.get_member_names()
+
+        items = group_names.items()
+        return render(request, "registration/show_groups.html", {"items": items})
