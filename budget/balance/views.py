@@ -9,6 +9,7 @@ from .forms import CreateTransactionForm
 
 from datetime import date
 from .models import Transaction
+from user.models import MyUser, UserGroup
 
 month_str = str(date.today().month)
 year_str = str(date.today().year)
@@ -79,8 +80,20 @@ class BalanceView(LoginRequiredMixin, ListView):
     def next_month_year(self, value):
         self._next_month_year = value
 
+    def group_members(self):
+        if self.request.method == "GET":
+            groups = UserGroup.objects.filter(members=self.request.user.id)
+            group_names = [i.name for i in groups]
+        return group_names
+
     def get_queryset(self):
-        queryset = Transaction.objects.filter(user=self.request.user)
+        active_user = MyUser.objects.get(id=self.request.user.id)
+        if active_user.as_group == "True":
+            queryset = Transaction.objects.filter(
+                group=active_user.get_active_group()).exclude(group__isnull=True)
+        else:
+            queryset = Transaction.objects.filter(
+                user=active_user, group__isnull=True)
         return queryset
 
     def month_amount(self):
@@ -90,8 +103,7 @@ class BalanceView(LoginRequiredMixin, ListView):
         for i in queryset:
             month_amount += i.active_month(
                 month=self.show_month, year=self.show_year)
-        self.month_amount = month_amount
-        return self.month_amount
+        return month_amount
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -101,16 +113,22 @@ class BalanceView(LoginRequiredMixin, ListView):
         context["show_year"] = self.show_year
         context["prev_month_year"] = self.prev_month_year
         context["next_month_year"] = self.next_month_year
+        context["groups"] = self.group_members()
         return context
 
 
 class TransactionDetailView(LoginRequiredMixin, DetailView):
     def get_queryset(self):
-        queryset = Transaction.objects.filter(user=self.request.user)
+        active_user = MyUser.objects.get(id=self.request.user.id)
+        if active_user.as_group == "True":
+            queryset = Transaction.objects.filter(
+                group=active_user.get_active_group()).exclude(group__isnull=True)
+        else:
+            queryset = Transaction.objects.filter(
+                user=active_user, group__isnull=True)
         return queryset
 
     def get_context_data(self, **kwargs):
-        id = self.kwargs["pk"]
         context = super().get_context_data(**kwargs)
         transaction = self.get_object()
         context["items_dict"] = transaction.dict().items()
@@ -119,22 +137,37 @@ class TransactionDetailView(LoginRequiredMixin, DetailView):
 
 class ExpenseListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
-        queryset = Transaction.objects.filter(
-            user=self.request.user, transaction_type="Expense")
+        active_user = MyUser.objects.get(id=self.request.user.id)
+        if active_user.as_group == "True":
+            queryset = Transaction.objects.filter(
+                group=active_user.get_active_group()).exclude(group__isnull=True)
+        else:
+            queryset = Transaction.objects.filter(
+                user=active_user, group__isnull=True)
         return queryset
 
 
 class IncomeListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
-        queryset = Transaction.objects.filter(
-            user=self.request.user, transaction_type="Income")
+        active_user = MyUser.objects.get(id=self.request.user.id)
+        if active_user.as_group == "True":
+            queryset = Transaction.objects.filter(
+                group=active_user.get_active_group()).exclude(group__isnull=True)
+        else:
+            queryset = Transaction.objects.filter(
+                user=active_user, group__isnull=True)
         return queryset
 
 
 class LoanListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
-        queryset = Transaction.objects.filter(
-            user=self.request.user, transaction_type="Loan")
+        active_user = MyUser.objects.get(id=self.request.user.id)
+        if active_user.as_group == "True":
+            queryset = Transaction.objects.filter(
+                group=active_user.get_active_group()).exclude(group__isnull=True)
+        else:
+            queryset = Transaction.objects.filter(
+                user=active_user, group__isnull=True)
         return queryset
 
 
@@ -144,11 +177,37 @@ def create_transaction_view(request):
         form = CreateTransactionForm(request.POST)
 
         if form.is_valid():
+
             newtrans = form.save(commit=False)
             newtrans.user = request.user
+            if request.user.as_group == "True":
+                newtrans.group = UserGroup.objects.get(
+                    name=request.user.group)
             newtrans.save()
             form.save_m2m()
             return redirect("balance")
     else:
         form = CreateTransactionForm()
     return render(request, "balance/create.html", {"form": form})
+
+
+def select_group_view(request):
+    # active_user = MyUser.objects.get(id=request.user.id)
+    groups = UserGroup.objects.filter(members=request.user.id)
+    group_names = [i.name for i in groups]
+    if request.method == "POST":
+        if request.POST.get("groups") in group_names:
+            request.user.set_active_group(request.POST.get("groups"))
+            request.user.save()
+
+            return redirect("balance")
+        elif request.POST.get("switch") == "Switch to individual account":
+            request.user.as_group = False
+            request.user.group = None
+            request.user.save()
+
+            return redirect("welcome")
+    else:
+        groups = UserGroup.objects.filter(members=request.user.id)
+        group_names = [i.name for i in groups]
+        return render(request, "balance/group_select.html", {"groups": group_names})

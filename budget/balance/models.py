@@ -1,7 +1,6 @@
 from django.db import models
 from datetime import timedelta, date
-from django.contrib.auth.models import User
-from user.models import UserGroup
+from user.models import MyUser, UserGroup
 # Create your models here.
 
 types = (("Income", "Income"), ("Expense", "Expense"), ("Loan", "Loan"))
@@ -18,7 +17,7 @@ repeat_patterns = (
 
 class Transaction(models.Model):
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, to_field="id")
+    user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
     transaction_type = models.CharField(
         max_length=25, choices=types, default="Expense")
     name = models.CharField(max_length=200)
@@ -33,6 +32,8 @@ class Transaction(models.Model):
     telephone = models.CharField(max_length=20, blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
     date_added = models.DateField(auto_now_add=True, editable=False)
+    group = models.ForeignKey(
+        UserGroup, blank=True, null=True, default=None, on_delete=models.CASCADE)
 
     @property
     def monthamount(self, month, year):
@@ -174,8 +175,3 @@ class Transaction(models.Model):
             return -amount
         else:
             return amount
-
-
-class GroupTransaction(Transaction):
-    group = models.ForeignKey(UserGroup,
-                              on_delete=models.CASCADE)

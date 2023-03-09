@@ -1,16 +1,16 @@
-from django.contrib.auth.models import User
+
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.db.models.fields import CharField
 from django.forms import ModelForm, Form
 from django import forms
-from .models import UserGroup
+from .models import MyUser, UserGroup
 
 
 class RegistrationForm(UserCreationForm):
     auto_id = True
 
     class Meta:
-        model = User
+        model = MyUser
         fields = ["id", "first_name", "last_name", "email",
                   "username", "password1", "password2"]
         # field_classes = {"username": CharField}
@@ -18,7 +18,7 @@ class RegistrationForm(UserCreationForm):
 
 class LoginForm(AuthenticationForm):
     class Meta:
-        model = User
+        model = MyUser
 
 
 class GroupRegistrationForm(ModelForm):

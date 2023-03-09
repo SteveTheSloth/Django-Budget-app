@@ -1,5 +1,7 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, Form
+from django.forms.widgets import ChoiceWidget
 from .models import Transaction
+from user.models import MyUser
 
 
 class CreateTransactionForm(ModelForm):
@@ -7,7 +9,7 @@ class CreateTransactionForm(ModelForm):
     class Meta:
         model = Transaction
         # fields = "__all__"
-        exclude = ["user"]
+        exclude = ["user", "group"]
 
         ''' ["name",
                   "purpose",

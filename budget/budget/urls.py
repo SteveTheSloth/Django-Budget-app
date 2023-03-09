@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
-from home.views import WelcomeView, registration, login, logout, registration_group, login_group, show_group_members
+from home.views import WelcomeView, registration, login, logout, registration_group, login_group, show_group_members, MemberView
 from balance.models import Transaction
 
 urlpatterns = [
@@ -32,6 +32,8 @@ urlpatterns = [
          registration_group, name="registration_group"),
     path("registration/login_group",
          login_group, name="login_group"),
+    path("groups/member_of", MemberView.as_view(
+        template_name="registration/show_member_groups.html"), name="member_of"),
     path("registration/show_group",
          show_group_members, name="show_group"),
     path("balance/", include("balance.urls")),]

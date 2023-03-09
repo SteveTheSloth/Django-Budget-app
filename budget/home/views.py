@@ -3,9 +3,8 @@ from django.views.generic.list import ListView
 from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.models import User
 from balance.models import Transaction
-from user.models import UserGroup
+from user.models import MyUser, UserGroup
 from user.forms import RegistrationForm, LoginForm, GroupRegistrationForm, GroupLoginForm
 from datetime import date
 import calendar
@@ -80,9 +79,19 @@ class WelcomeView(LoginRequiredMixin, ListView):
     def next_month_year(self, value):
         self._next_month_year = value
 
+    def get_queryset(self):
+        active_user = MyUser.objects.get(id=self.request.user.id)
+        if active_user.as_group == "True":
+            queryset = Transaction.objects.filter(
+                group=active_user.get_active_group()).exclude(group__isnull=True)
+        else:
+            queryset = Transaction.objects.filter(
+                user=active_user, group__isnull=True)
+        return queryset
+
     def dayly_transactions(self):
         dayly_transactions_dict = dict()
-        for transaction in Transaction.objects.filter(user=self.request.user.id):
+        for transaction in self.get_queryset():
             for key, value in transaction.day_balance(self.show_month, self.show_year).items():
                 if key not in dayly_transactions_dict:
                     dayly_transactions_dict[key] = [value]
@@ -196,7 +205,7 @@ def registration_group(request):
         form = GroupRegistrationForm(request.POST)
         if form.is_valid():
             group = form.save()
-            group.members.add(User.objects.get(id=request.user.id))
+            group.members.add(MyUser.objects.get(id=request.user.id))
 
             return redirect("welcome")
         else:
@@ -221,7 +230,7 @@ def login_group(request):
                 return render(request, "registration/login_group.html",
                               {"member": True, "name": request.POST.get("Group Name")})
             except:
-                group.members.add(User.objects.get(id=request.user.id))
+                group.members.add(MyUser.objects.get(id=request.user.id))
                 group.nr_of_members += 1
                 group.save()
                 return render(request, "registration/success_group.html", {"name": group.name})
@@ -240,3 +249,14 @@ def show_group_members(request):
 
         items = group_names.items()
         return render(request, "registration/show_groups.html", {"items": items})
+
+
+class MemberView(LoginRequiredMixin, ListView):
+    def get_queryset(self):
+        queryset = UserGroup.objects.filter(members=self.request.user.id)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context["groups"] = [x.name for x in self.get_queryset()]
+        return context
