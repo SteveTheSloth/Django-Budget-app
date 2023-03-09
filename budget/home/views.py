@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect
 from django.views.generic.list import ListView
-from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth import login
+from django.contrib.auth.hashers import make_password, check_password
 from balance.models import Transaction
 from user.models import MyUser, UserGroup
-from user.forms import RegistrationForm, LoginForm, GroupRegistrationForm, GroupLoginForm
+from user.forms import RegistrationForm, LoginForm, GroupRegistrationForm
 from datetime import date
 import calendar
 
@@ -204,7 +204,10 @@ def registration_group(request):
     elif request.method == "POST":
         form = GroupRegistrationForm(request.POST)
         if form.is_valid():
-            group = form.save()
+            password = make_password(request.POST["password"])
+            name = request.POST["name"]
+            group = (UserGroup(name=name, password=password))
+            group.save()
             group.members.add(MyUser.objects.get(id=request.user.id))
 
             return redirect("welcome")
@@ -224,7 +227,7 @@ def login_group(request):
         except:
             return render(request, "registration/login_group.html", {"group_exists": True,
                                                                      "name": request.POST.get("Group Name")})
-        if request.POST.get("Password") == group.password:
+        if check_password(request.POST.get("Password"), group.password):
             try:
                 group.members.get(id=request.user.id)
                 return render(request, "registration/login_group.html",

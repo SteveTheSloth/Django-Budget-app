@@ -7,7 +7,16 @@
     <title>Document</title>
 </head>
 <body>
-    <h4>{{user.username}} <a href="{% url 'logout' %}">Logout</a></h4>
+    <h4>
+        {% if user.group == None %}
+        {{user.username}}
+        {% else %}
+        {{user.group}}
+        {% endif %}</a> 
+        <a href="{% url 'group_select' %}">Group/Individual Select</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </h4>
+
         <form method="post">{% csrf_token %}
         <table>
             {{form}}
@@ -15,5 +24,15 @@
         <input type="submit" value="Save">
         <a href="{% url 'balance' %}">No</a>
     </form>
+
+    <nav>
+        <a href="{% url 'welcome' %}">Home</a>
+        <a href="{% url 'balance' %}">Monthly Balance</a>
+        <a href="{% url 'expenses' %}">Bills</a>
+        <a href="{% url 'incomes' %}">Incomes</a>
+        <a href="{% url 'loans' %}">loans</a>
+        <a href="{% url 'registration_group' %}">Create a new Group</a>
+        <a href="{% url 'login_group' %}">Join existing Group</a>
+    </nav>
 </body>
 </html>

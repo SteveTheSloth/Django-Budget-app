@@ -4,11 +4,19 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Join Group</title>
 </head>
 <body>
     {% if user.is_authenticated %}
-    <h3>Welcome {{user.username}}</h3>
+    <h4>
+        {% if user.group == None %}
+        {{user.username}}
+        {% else %}
+        {{user.group}}
+        {% endif %}</a> 
+        <a href="{% url 'group_select' %}">Group/Individual Select</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </h4>
     
     <h3>Login to an existing Group</h3>
     {% if member %}
@@ -20,13 +28,22 @@
     {% if wrong_password %}
     <h3>The Password you entered is incorrect.</h3>
     {% endif %}
-    <form method="post">{% csrf_token %}
+    <form method="post" autocomplete="off">{% csrf_token %}
         <label for="Group Name">Group Name</label>
-        <input type="text" name="Group Name" value="{{ name }}">
+        <input type="text" onfocus="this.value=''" name="Group Name"  placeholder="Group Name" >
         <label for="password">Password</label>
-        <input type="text" name="Password" value="{{ password }}">
+        <input type="password" onfocus="this.value=''" name="Password" placeholder="Password">
         <input type="submit" value="Login">
     </form>
     {% endif %}
+    <nav>
+        <a href="{% url 'welcome' %}">Home</a>
+        <a href="{% url 'balance' %}">Monthly Balance</a>
+        <a href="{% url 'expenses' %}">Bills</a>
+        <a href="{% url 'incomes' %}">Incomes</a>
+        <a href="{% url 'loans' %}">loans</a>
+        <a href="{% url 'create' %}">Add new Transaction</a>
+        <a href="{% url 'registration_group' %}">Create a new Group</a>
+    </nav>
 </body>
 </html>
