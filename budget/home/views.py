@@ -149,13 +149,17 @@ class WelcomeView(LoginRequiredMixin, ListView):
             ]
             weeks.append(sixth_week)
             first_days = [i for i in range(1, 7) if len(sixth_week) + i <= 7]
-        return (last_days, weeks, first_days)
+
+        last_week = weeks[-1]
+        weeks = weeks[:-1]
+        return (last_days, weeks, first_days, last_week)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        last_days, weeks, first_days = self.weeks()
+        last_days, weeks, first_days, last_week = self.weeks()
         context["last_days"] = last_days
         context["weeks"] = weeks
+        context["last_week"] = last_week
         context["first_days"] = first_days
         show_date = date(year=self.show_year, month=self.show_month, day=1)
         context["month"] = show_date.strftime("%B")
@@ -215,6 +219,10 @@ def registration_group(request):
             return render(request, "registration/register_group.html", {"form": form})
 
 
+def success_group(request, name):
+    return render(request, "registration/success_group.html", {"name": name})
+
+
 def login_group(request):
     if request.method == "GET":
 
@@ -236,7 +244,7 @@ def login_group(request):
                 group.members.add(MyUser.objects.get(id=request.user.id))
                 group.nr_of_members += 1
                 group.save()
-                return render(request, "registration/success_group.html", {"name": group.name})
+                return redirect("success_group", group.name)
 
         else:
             return render(request, "registration/login_group.html",
