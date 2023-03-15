@@ -1,25 +1,23 @@
 from django.db import models
 from datetime import timedelta, date
 from user.models import MyUser, UserGroup
+
 # Create your models here.
-
-types = (("Income", "Income"), ("Expense", "Expense"), ("Loan", "Loan"))
-
-repeat_patterns = (
-    ("one off", "one off"),
-    ("monthly", "monthly"),
-    ("weekly", "weekly"),
-    ("every two weeks", "every two weeks"),
-    ("every three weeks", "every three weeks"),
-    ("every four weeks", "every four weeks"),
-)
 
 
 class Transaction(models.Model):
+    types = (("Income", "Income"), ("Expense", "Expense"), ("Loan", "Loan"))
 
+    repeat_patterns = (
+        ("one off", "one off"),
+        ("monthly", "monthly"),
+        ("weekly", "weekly"),
+        ("every two weeks", "every two weeks"),
+        ("every three weeks", "every three weeks"),
+        ("every four weeks", "every four weeks"),
+    )
     user = models.ForeignKey(MyUser, on_delete=models.CASCADE)
-    transaction_type = models.CharField(
-        max_length=25, choices=types, default="Expense")
+    transaction_type = models.CharField(max_length=25, choices=types, default="Expense")
     name = models.CharField(max_length=200)
     purpose = models.CharField(max_length=200)
     amount = models.FloatField(max_length=6)
@@ -33,10 +31,11 @@ class Transaction(models.Model):
     end_date = models.DateField(blank=True, null=True)
     date_added = models.DateField(auto_now_add=True, editable=False)
     group = models.ForeignKey(
-        UserGroup, blank=True, null=True, default=None, on_delete=models.CASCADE)
+        UserGroup, blank=True, null=True, default=None, on_delete=models.CASCADE
+    )
 
-    @property
     def monthamount(self, month, year):
+        # Calculate total amount of a transaction in active month
         amount_dict = self.active_month(month, year)
         amount = 0
         for value in amount_dict.values():
@@ -63,6 +62,7 @@ class Transaction(models.Model):
         return attributes
 
     def day_balance(self, month, year):
+        # Return dictionary of format {day: amount} for active month depending on the repeat pattern of the transaction
         if (
             self.transaction_type == "Loan"
             or self.due_date.month > month
@@ -93,6 +93,7 @@ class Transaction(models.Model):
             return self.weekly_day(month, timedelta(weeks=4))
 
     def one_off_day(self):
+        # Return dictionary of format {day: amount} for a one_off or monthly payment
         dayly_transaction_dict = dict()
 
         if self.transaction_type == "Expense":
@@ -103,6 +104,7 @@ class Transaction(models.Model):
         return dayly_transaction_dict
 
     def weekly_day(self, month, delta):
+        # Return dictionary of format {day: amount} for a 1/2/3/4-weekly repeat pattern.
         due_date = self.due_date
         dayly_transaction_dict = dict()
 
@@ -120,6 +122,7 @@ class Transaction(models.Model):
         return dayly_transaction_dict
 
     def active_month(self, month=date.today().month, year=date.today().year):
+        # retrun total amount for transaction in active month
         if (
             self.due_date.month > month
             and self.due_date.year >= year
@@ -161,6 +164,7 @@ class Transaction(models.Model):
                 return self.weekly_month(month, timedelta(weeks=4))
 
     def weekly_month(self, month, delta):
+        # return total amoount for transaction in a month if it has a 1/2/3/4-weekly repeat pattern
         due_date = self.due_date
         amount = 0
 

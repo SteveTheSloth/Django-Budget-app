@@ -1,6 +1,4 @@
-
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
-from django.db.models.fields import CharField
 from django.forms import ModelForm, Form
 from django import forms
 from .models import MyUser, UserGroup
@@ -11,9 +9,15 @@ class RegistrationForm(UserCreationForm):
 
     class Meta:
         model = MyUser
-        fields = ["id", "first_name", "last_name", "email",
-                  "username", "password1", "password2"]
-        # field_classes = {"username": CharField}
+        fields = [
+            "id",
+            "first_name",
+            "last_name",
+            "email",
+            "username",
+            "password1",
+            "password2",
+        ]
 
 
 class LoginForm(AuthenticationForm):
@@ -27,7 +31,6 @@ class GroupRegistrationForm(ModelForm):
     class Meta:
         model = UserGroup
         exclude = ["admin", "members", "nr_of_members"]
-        # fields = ["name", "password"]
 
 
 class GroupLoginForm(Form):
