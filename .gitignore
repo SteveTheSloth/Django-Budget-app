@@ -1,4 +1,4 @@
 __pycache__
 Pipfile
 Structure.xlsx
-*.sql
+*.sqlite3
