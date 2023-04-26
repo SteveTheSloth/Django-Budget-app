@@ -2,8 +2,6 @@ from django.db import models
 from datetime import timedelta, date
 from user.models import MyUser, UserGroup
 
-# Create your models here.
-
 
 class Transaction(models.Model):
     types = (("Income", "Income"), ("Expense", "Expense"), ("Loan", "Loan"))

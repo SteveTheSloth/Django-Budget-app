@@ -4,9 +4,6 @@ from django.views.generic.detail import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from .forms import CreateTransactionForm
-
-# Create your views here.
-
 from datetime import date
 from .models import Transaction
 from user.models import MyUser, UserGroup
@@ -14,10 +11,12 @@ from user.models import MyUser, UserGroup
 
 def find_queryset(user_id):
     active_user = MyUser.objects.get(id=user_id)
-    if active_user.as_group == "True":
-        queryset = Transaction.objects.filter(group=active_user.get_active_group())
+    if active_user.as_group:
+        queryset = Transaction.objects.filter(
+            group=active_user.get_active_group())
     else:
-        queryset = Transaction.objects.filter(user=active_user, group__isnull=True)
+        queryset = Transaction.objects.filter(
+            user=active_user, group__isnull=True)
     return queryset
 
 
@@ -106,7 +105,8 @@ class BalanceView(LoginRequiredMixin, ListView):
         month_amount = 0
         queryset = self.get_queryset()
         for i in queryset:
-            month_amount += i.active_month(month=self.show_month, year=self.show_year)
+            month_amount += i.active_month(month=self.show_month,
+                                           year=self.show_year)
         return month_amount
 
     def get_context_data(self, **kwargs):
@@ -162,7 +162,7 @@ def create_transaction_view(request):
         if form.is_valid():
             newtrans = form.save(commit=False)
             newtrans.user = request.user
-            if request.user.as_group == "True":
+            if request.user.as_group:
                 newtrans.group = UserGroup.objects.get(name=request.user.group)
             newtrans.save()
             form.save_m2m()

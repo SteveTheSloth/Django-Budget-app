@@ -1,0 +1,4 @@
+*.cfg
+__pycache__
+Pipfile
+Structure.xlsx

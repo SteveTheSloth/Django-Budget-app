@@ -9,8 +9,6 @@ from user.forms import RegistrationForm, GroupRegistrationForm
 from datetime import date
 import calendar
 
-# Create your views here.
-
 
 month_str = str(date.today().month)
 year_str = str(date.today().year)
